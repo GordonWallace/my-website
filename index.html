@@ -3,10 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Test</title>
+    <title>Train Trip Journal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Blog Post */
+        .post {
+            background: white;
+            margin-bottom: 3rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .post-header {
+            padding: 1.5rem 2rem 1rem;
+        }
+
+        .post-title {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-date {
+            color: #888;
+            font-size: 0.9rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .post-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+            padding: 0 2rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .post-image:hover {
+            transform: scale(1.05);
+        }
+
+        .post-content {
+            padding: 1.5rem 2rem 2rem;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .post-content p {
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .post-title {
+                font-size: 1.5rem;
+            }
+
+            .post-images {
+                grid-template-columns: 1fr;
+            }
+
+            .post-image {
+                height: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Website</h1>
-    <p>This is a test page.</p>
+    <header>
+        <h1>Train Trip Journal</h1>
+        <p>Riding Amtrak from Boston to LA</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- ============================================ -->
+        <!-- POST TEMPLATE - Copy this section to add new posts -->
+        <!-- ============================================ -->
+        <!-- 
+        <article class="post">
+            <div class="post-header">
+                <h2 class="post-title">Your Post Title Here</h2>
+                <p class="post-date">Month Day, Year</p>
+            </div>
+            <div class="post-images">
+                <img src="images/post1/img1.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img2.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img3.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img4.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img5.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img6.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img7.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img8.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img9.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img10.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img11.jpg" alt="Description" class="post-image">
+                <img src="images/post1/img12.jpg" alt="Description" class="post-image">
+            </div>
+            <div class="post-content">
+                <p>Your first paragraph of text goes here...</p>
+                <p>Your second paragraph of text goes here...</p>
+            </div>
+        </article>
+        -->
+        <!-- ============================================ -->
+
+        <!-- Example Post 1 - Most Recent -->
+        <article class="post">
+            <div class="post-header">
+                <h2 class="post-title">Test</h2>
+                <p class="post-date">November 16, 2025</p>
+            </div>
+            <div class="post-images">
+                <img src="images/test/img1.jpg" alt="Test image" class="post-image">
+            </div>
+            <div class="post-content">
+                <p>Test post.</p>
+                <p>Test post.</p>
+            </div>
+        </article>
+    </div>
 </body>
 </html>
