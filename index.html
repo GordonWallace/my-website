@@ -78,8 +78,13 @@
         .post-images {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.5rem;
+            gap: 1rem;
             padding: 0 2rem;
+        }
+
+        .image-container {
+            display: flex;
+            flex-direction: column;
         }
 
         .post-image {
@@ -93,6 +98,16 @@
 
         .post-image:hover {
             transform: scale(1.05);
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-family: 'Arial', sans-serif;
+            font-style: italic;
+            margin-top: 0.3rem;
+            text-align: center;
+            line-height: 1.3;
         }
 
         .post-content {
@@ -151,18 +166,54 @@
                 <p class="post-date">Month Day, Year</p>
             </div>
             <div class="post-images">
-                <img src="images/post1/img1.jpg" class="post-image">
-                <img src="images/post1/img2.jpg" class="post-image">
-                <img src="images/post1/img3.jpg" class="post-image">
-                <img src="images/post1/img4.jpg" class="post-image">
-                <img src="images/post1/img5.jpg" class="post-image">
-                <img src="images/post1/img6.jpg" class="post-image">
-                <img src="images/post1/img7.jpg" class="post-image">
-                <img src="images/post1/img8.jpg" class="post-image">
-                <img src="images/post1/img9.jpg" class="post-image">
-                <img src="images/post1/img10.jpg" class="post-image">
-                <img src="images/post1/img11.jpg" class="post-image">
-                <img src="images/post1/img12.jpg" class="post-image">
+                <div class="image-container">
+                    <img src="images/post1/img1.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 1</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img2.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 2</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img3.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 3</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img4.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 4</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img5.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 5</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img6.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 6</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img7.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 7</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img8.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 8</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img9.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 9</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img10.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 10</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img11.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 11</p>
+                </div>
+                <div class="image-container">
+                    <img src="images/post1/img12.jpg" class="post-image">
+                    <p class="image-caption">Caption for image 12</p>
+                </div>
             </div>
             <div class="post-content">
                 <p>Your first paragraph of text goes here...</p>
@@ -179,7 +230,10 @@
                 <p class="post-date">November 14, 2025</p>
             </div>
             <div class="post-images">
-                <img src="images/20251115_143630.jpg" class="post-image">
+                <div class="image-container">
+                    <img src="images/20251115_143630.jpg" class="post-image">
+                    <p class="image-caption">Saturday in Brooklyn</p>
+                </div>
             </div>
             <div class="post-content">
                 <p>On Friday, November 14th, I began my trip.  I used the first of 10 rides on my Amtrak USA Rail pass to take the Northeast Regional, train 179, from Boston to New York, leaving at 7:47pm and arriving at 11:49pm.  My train to Chicago, the Lake Shore Limited, normally has a branch that operates out of Boston, but that branch is closed for maintenance, so I had to catch it from New York.  Fortunately for me, Meha was kind enough to take me in for the night.  We got to spend most of Saturday hanging out around Brooklyn. </p>
