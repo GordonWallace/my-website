@@ -1,13 +1,49 @@
 [
+    {
+    "id": "nyc-to-chicago",
+    "title": "Ride 2: New York to Chicago",
+    "date": "November 15-16, 2025",
+    "textFile": "post-text/nyc-to-chicago.txt",
+    "images": [
+      {
+        "src": "images/20251115_184656.jpg",
+        "caption": "The Lake Shore Limited, at a \"smoke break\" (extended stop where you can get off for some air) in Albany"
+      },
+      {
+        "src": "images/20251116_073944.jpg",
+        "caption": "Sunrise over western Ohio"
+      },
+      {
+        "src": "images/20251116_074936.jpg",
+        "caption": "The Spangler Candy Company factory in Bryan, Ohio, the makers of Dum Dums (painted on the water tower"
+      },
+      {
+        "src": "images/20251115_170354.jpg",
+        "caption": "The food menu on the Lake Shore Limited - the standard national menu"
+      },
+      {
+        "src": "images/20251115_170357.jpg",
+        "caption": "The drink menu on the Lake Shore Limited - also the standard national menu"
+      },
+    {
+        "src": "images/20251116_092437.jpg",
+        "caption": "The Lake Shore Limited dining car"
+      }
+    ]
+  },
   {
-    "id": "post1",
+    "id": "boston-to-nyc",
     "title": "Ride 1: Boston to New York",
     "date": "November 14, 2025",
-    "textFile": "post-text/post1.txt",
+    "textFile": "post-text/boston-to-nyc.txt",
     "images": [
       {
         "src": "images/20251115_143630.jpg",
         "caption": "Saturday in Brooklyn"
+      },
+      {
+        "src": "images/20251115_162453.jpg",
+        "caption": "Seating in coach on the Northeast Regional - more spacious than a plane, more cramped than the long-distance trains I took later in my trip"
       }
     ]
   }
