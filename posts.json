@@ -1,0 +1,14 @@
+[
+  {
+    "id": "post1",
+    "title": "Ride 1: Boston to New York",
+    "date": "November 14, 2025",
+    "textFile": "post-text/post1.txt",
+    "images": [
+      {
+        "src": "images/20251115_143630.jpg",
+        "caption": "Saturday in Brooklyn"
+      }
+    ]
+  }
+]

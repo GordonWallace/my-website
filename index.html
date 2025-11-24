@@ -212,91 +212,78 @@
         <p>Can it be done? Perhaps</p>
     </header>
 
-    <div class="container">
-        
-        <!-- ============================================ -->
-        <!-- POST TEMPLATE - Copy this section to add new posts -->
-        <!-- ============================================ -->
-        <!-- 
-        <article class="post">
-            <div class="post-header">
-                <h2 class="post-title">Your Post Title Here</h2>
-                <p class="post-date">Month Day, Year</p>
-            </div>
-            <div class="post-images">
-                <div class="image-container">
-                    <img src="images/post1/img1.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 1</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img2.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 2</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img3.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 3</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img4.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 4</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img5.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 5</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img6.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 6</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img7.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 7</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img8.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 8</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img9.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 9</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img10.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 10</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img11.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 11</p>
-                </div>
-                <div class="image-container">
-                    <img src="images/post1/img12.jpg" class="post-image">
-                    <p class="image-caption">Caption for image 12</p>
-                </div>
-            </div>
-            <div class="post-content">
-                <p>Your first paragraph of text goes here...</p>
-                <p>Your second paragraph of text goes here...</p>
-            </div>
-        </article>
-        -->
-        <!-- ============================================ -->
-
-        <!-- Example Post 1 - Most Recent -->
-        <article class="post">
-            <div class="post-header">
-                <h2 class="post-title">Ride 1: Boston to New York</h2>
-                <p class="post-date">November 14, 2025</p>
-            </div>
-            <div class="post-images">
-                <div class="image-container">
-                    <img src="images/20251115_143630.jpg" class="post-image">
-                    <p class="image-caption">Saturday in Brooklyn</p>
-                </div>
-            </div>
-            <div class="post-content">
-                <p>On Friday, November 14th, I began my trip.  I used the first of 10 rides on my Amtrak USA Rail pass to take the Northeast Regional, train 179, from Boston to New York, leaving at 7:47pm and arriving at 11:49pm.  My train to Chicago, the Lake Shore Limited, normally has a branch that operates out of Boston, but that branch is closed for maintenance, so I had to catch it from New York.  Fortunately for me, Meha was kind enough to take me in for the night.  We got to spend most of Saturday hanging out around Brooklyn. </p>
-            </div>
-        </article>
+    <div class="container" id="posts-container">
+        <!-- Posts will be loaded here dynamically -->
     </div>
+
+    <footer>
+        <p>&copy; 2025 Train Trip Journal | Riding the Rails Across America</p>
+    </footer>
+
+    <script>
+        // Load posts from posts.json and text files
+        async function loadPosts() {
+            try {
+                // Fetch the posts configuration
+                const response = await fetch('posts.json');
+                const posts = await response.json();
+                
+                const container = document.getElementById('posts-container');
+                
+                // Load each post
+                for (const post of posts) {
+                    // Fetch the text content
+                    const textResponse = await fetch(post.textFile);
+                    const textContent = await textResponse.text();
+                    
+                    // Create the post HTML
+                    const article = document.createElement('article');
+                    article.className = 'post';
+                    
+                    // Build images HTML
+                    let imagesHTML = '';
+                    if (post.images && post.images.length > 0) {
+                        imagesHTML = '<div class="post-images">';
+                        for (const image of post.images) {
+                            imagesHTML += `
+                                <div class="image-container">
+                                    <img src="${image.src}" class="post-image" alt="${image.caption || ''}">
+                                    <p class="image-caption">${image.caption || ''}</p>
+                                </div>
+                            `;
+                        }
+                        imagesHTML += '</div>';
+                    }
+                    
+                    // Split text content into paragraphs (split by double newlines or single newlines)
+                    const paragraphs = textContent.trim().split(/\n\n+/).filter(p => p.trim());
+                    let contentHTML = '<div class="post-content">';
+                    for (const paragraph of paragraphs) {
+                        contentHTML += `<p>${paragraph.trim()}</p>`;
+                    }
+                    contentHTML += '</div>';
+                    
+                    // Assemble the complete post
+                    article.innerHTML = `
+                        <div class="post-header">
+                            <h2 class="post-title">${post.title}</h2>
+                            <p class="post-date">${post.date}</p>
+                        </div>
+                        ${imagesHTML}
+                        ${contentHTML}
+                    `;
+                    
+                    container.appendChild(article);
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                document.getElementById('posts-container').innerHTML = 
+                    '<p style="text-align: center; color: #d31e39;">Error loading posts. Please try again later.</p>';
+            }
+        }
+        
+        // Load posts when page loads
+        document.addEventListener('DOMContentLoaded', loadPosts);
+    </script>
 </body>
 </html>
