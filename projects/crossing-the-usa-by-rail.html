@@ -299,7 +299,13 @@
             if (!normalizedInput || normalizedInput.includes('\\') || normalizedInput.startsWith('/')) {
                 throw new Error(`Invalid path: ${rawPath}`);
             }
-            const rawSegments = normalizedInput.split('/').map((segment) => decodeURIComponent(segment));
+            const rawSegments = normalizedInput.split('/').map((segment) => {
+                try {
+                    return decodeURIComponent(segment);
+                } catch (error) {
+                    throw new Error(`Invalid path encoding: ${rawPath}`);
+                }
+            });
             if (rawSegments.some((segment) => segment === '.' || segment === '..')) {
                 throw new Error(`Path traversal segment is not allowed: ${rawPath}`);
             }
@@ -416,8 +422,16 @@
             if (!Number.isInteger(month) || Number.isNaN(day) || Number.isNaN(year)) {
                 return Number.NEGATIVE_INFINITY;
             }
-
-            return Date.UTC(year, month, day);
+            const timestamp = Date.UTC(year, month, day);
+            const parsedDate = new Date(timestamp);
+            if (
+                parsedDate.getUTCFullYear() !== year
+                || parsedDate.getUTCMonth() !== month
+                || parsedDate.getUTCDate() !== day
+            ) {
+                return Number.NEGATIVE_INFINITY;
+            }
+            return timestamp;
         }
 
         async function mapWithConcurrency(items, limit, mapper) {
@@ -495,6 +509,9 @@
                     .filter((post) => post && post.project === PROJECT_ID);
                 if (posts.some((post) => !post || typeof post.project !== 'string' || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
                     throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
+                }
+                if (posts.some((post) => getSortableTimestamp(post) === Number.NEGATIVE_INFINITY)) {
+                    throw new Error('Invalid posts.json format: unsupported date format.');
                 }
                 posts.sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
                 const container = document.getElementById('posts-container');
