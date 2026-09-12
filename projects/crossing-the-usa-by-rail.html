@@ -278,6 +278,7 @@
 
     <script>
         const PROJECT_ID = 'crossing-the-usa-by-rail';
+        const POSTS_SCHEMA_DESCRIPTION = 'Each posts.json entry must include a string "project" field matching a project page ID.';
 
         function resolveSafeProjectAssetPath(rawPath, allowedBaseDirectory) {
             const normalizedInput = typeof rawPath === 'string' ? rawPath : '';
@@ -436,6 +437,9 @@
                 const rawPosts = await response.json();
                 if (!Array.isArray(rawPosts)) {
                     throw new Error('Invalid posts.json format: expected an array of posts.');
+                }
+                if (rawPosts.some((post) => !post || typeof post.project !== 'string')) {
+                    throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
                 }
 
                 const posts = rawPosts
