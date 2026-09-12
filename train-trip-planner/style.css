@@ -1,0 +1,357 @@
+* {
+    box-sizing: border-box;
+}
+
+.app-shell {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.app-intro {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.app-panel,
+.route-card,
+.stop-card,
+.schedule-panel,
+.saved-schedules-panel,
+.empty-state,
+.error-banner,
+.success-banner,
+.note-card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #d8e1ec;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 62, 126, 0.08);
+}
+
+.app-panel,
+.saved-schedules-panel,
+.schedule-panel,
+.note-card,
+.empty-state {
+    padding: 1.5rem;
+}
+
+.app-panel h2,
+.saved-schedules-panel h2,
+.schedule-panel h2,
+.note-card h2 {
+    color: #003e7e;
+    margin-bottom: 0.75rem;
+}
+
+.app-panel p,
+.saved-schedules-panel p,
+.note-card p,
+.empty-state p {
+    color: #4f5f73;
+}
+
+.meta-list {
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.meta-list strong {
+    display: block;
+    color: #003e7e;
+    margin-bottom: 0.15rem;
+}
+
+.planner-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.form-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.form-field label {
+    color: #003e7e;
+    font-weight: 700;
+}
+
+.form-field select,
+.form-field input,
+.duration-input {
+    width: 100%;
+    padding: 0.85rem 0.95rem;
+    border-radius: 12px;
+    border: 1px solid #c6d4e3;
+    font: inherit;
+    color: #1a1a1a;
+    background: white;
+}
+
+.form-actions,
+.schedule-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.button-link,
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.85rem 1.25rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.button-link:hover,
+.action-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.action-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.action-button.primary {
+    background: #003e7e;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 62, 126, 0.18);
+}
+
+.action-button.secondary,
+.button-link.secondary {
+    background: rgba(0, 94, 184, 0.08);
+    color: #005eb8;
+    border-color: rgba(0, 94, 184, 0.18);
+}
+
+.action-button.ghost {
+    background: white;
+    color: #003e7e;
+    border-color: #c6d4e3;
+}
+
+.action-button.danger {
+    background: rgba(211, 30, 57, 0.08);
+    color: #b51a32;
+    border-color: rgba(211, 30, 57, 0.18);
+}
+
+.route-results,
+.stops-panel {
+    display: grid;
+    gap: 1rem;
+}
+
+.route-card,
+.stop-card {
+    padding: 1.25rem;
+}
+
+.route-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.route-card:hover,
+.route-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: #005eb8;
+    box-shadow: 0 14px 32px rgba(0, 62, 126, 0.12);
+}
+
+.route-card.selected {
+    border-color: #005eb8;
+    box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.12);
+}
+
+.route-card h3 {
+    color: #003e7e;
+    margin-bottom: 0.75rem;
+}
+
+.route-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    color: #425466;
+}
+
+.route-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(211, 30, 57, 0.08);
+    color: #b51a32;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.stop-card {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.stop-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+
+.stop-row input[type="checkbox"] {
+    margin-top: 0.35rem;
+}
+
+.stop-row strong {
+    color: #003e7e;
+}
+
+.stop-duration {
+    display: none;
+    grid-template-columns: minmax(0, 180px) 120px;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.stop-duration.visible {
+    display: grid;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.status-banner {
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+}
+
+.error-banner {
+    color: #8f1025;
+    background: rgba(211, 30, 57, 0.08);
+    border-color: rgba(211, 30, 57, 0.18);
+    padding: 1rem 1.25rem;
+}
+
+.success-banner {
+    color: #0b5b32;
+    background: rgba(26, 127, 55, 0.08);
+    border-color: rgba(26, 127, 55, 0.18);
+    padding: 1rem 1.25rem;
+}
+
+.schedule-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.summary-pill {
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(0, 94, 184, 0.08);
+    color: #005eb8;
+    font-weight: 700;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 0.9rem 0.85rem;
+    border-bottom: 1px solid #e8eef3;
+    text-align: left;
+}
+
+.schedule-table th {
+    color: #003e7e;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.segment-row td {
+    background: #f5f9ff;
+    color: #003e7e;
+    font-weight: 700;
+}
+
+.duration-row td {
+    color: #8a5a00;
+    background: #fff8e8;
+}
+
+.saved-schedule-list {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: 1rem;
+}
+
+.saved-item {
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid #d8e1ec;
+    background: #f9fbfd;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.saved-item strong {
+    color: #003e7e;
+}
+
+.saved-item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.loading-text {
+    color: #005eb8;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .app-intro {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .stop-duration,
+    .route-meta {
+        grid-template-columns: 1fr;
+    }
+}
