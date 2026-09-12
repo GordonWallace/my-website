@@ -353,10 +353,21 @@
 
                 const posts = await response.json();
                 const container = document.getElementById('posts-container');
-                const textContents = await Promise.all(posts.map((post) => fetchTextForPost(post)));
+                const textPromises = posts.map((post) => fetchTextForPost(post));
 
                 posts.forEach((post, index) => {
-                    container.appendChild(buildPost(post, textContents[index]));
+                    textPromises[index]
+                        .then((textContent) => {
+                            container.appendChild(buildPost(post, textContent));
+                        })
+                        .catch((postError) => {
+                            console.error(`Error loading post content for ${post.id}:`, postError);
+                            const postErrorMessage = document.createElement('p');
+                            postErrorMessage.style.textAlign = 'center';
+                            postErrorMessage.style.color = '#d31e39';
+                            postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
+                            container.appendChild(postErrorMessage);
+                        });
                 });
             } catch (error) {
                 console.error('Error loading posts:', error);
