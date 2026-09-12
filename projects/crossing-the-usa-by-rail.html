@@ -369,7 +369,10 @@
             if (!post || typeof post.date !== 'string') {
                 return Number.NEGATIVE_INFINITY;
             }
-            const normalizedDate = post.date.replace(/(\w+\s+\d+)-\d+,\s*(\d{4})/, '$1, $2');
+            const rangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-(\d+),\s*(\d{4})$/);
+            const normalizedDate = rangeMatch
+                ? `${rangeMatch[1]} ${rangeMatch[3]}, ${rangeMatch[4]}`
+                : post.date;
             const timestamp = Date.parse(normalizedDate);
             return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
         }
