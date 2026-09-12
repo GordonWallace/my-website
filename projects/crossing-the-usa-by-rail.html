@@ -443,13 +443,21 @@
                 return Number.NEGATIVE_INFINITY;
             }
             const sameMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-(\d+),\s*(\d{4})$/);
-            const crossMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-([A-Za-z]+)\s+(\d+),\s*(\d{4})$/);
+            const crossMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-([A-Za-z]+)\s+(\d+),\s*(\d{4})(?:\/(\d{4}))?$/);
             if (sameMonthRangeMatch) {
                 return parseMonthDayYear(sameMonthRangeMatch[1], sameMonthRangeMatch[3], sameMonthRangeMatch[4]);
             }
 
             if (crossMonthRangeMatch) {
-                return parseMonthDayYear(crossMonthRangeMatch[3], crossMonthRangeMatch[4], crossMonthRangeMatch[5]);
+                const startMonthIndex = MONTH_INDEX[String(crossMonthRangeMatch[1]).toLowerCase()];
+                const endMonthIndex = MONTH_INDEX[String(crossMonthRangeMatch[3]).toLowerCase()];
+                const startYear = Number.parseInt(crossMonthRangeMatch[5], 10);
+                const explicitEndYear = crossMonthRangeMatch[6] ? Number.parseInt(crossMonthRangeMatch[6], 10) : null;
+                const derivedEndYear = explicitEndYear
+                    || (Number.isInteger(startMonthIndex) && Number.isInteger(endMonthIndex) && endMonthIndex < startMonthIndex
+                        ? startYear + 1
+                        : startYear);
+                return parseMonthDayYear(crossMonthRangeMatch[3], crossMonthRangeMatch[4], String(derivedEndYear));
             }
 
             const singleDateMatch = post.date.match(/^([A-Za-z]+)\s+(\d+),\s*(\d{4})$/);
@@ -483,16 +491,24 @@
                 if (!container) {
                     throw new Error('Missing posts container element.');
                 }
+                container.setAttribute('aria-busy', 'true');
                 if (posts.length === 0) {
                     const emptyMessage = document.createElement('p');
                     emptyMessage.style.textAlign = 'center';
                     emptyMessage.textContent = 'No entries are available for this project yet.';
                     container.appendChild(emptyMessage);
+                    container.setAttribute('aria-busy', 'false');
                     return;
                 }
                 const placeholders = posts.map(() => {
                     const placeholder = document.createElement('div');
                     placeholder.className = 'post';
+                    placeholder.setAttribute('role', 'status');
+                    placeholder.setAttribute('aria-live', 'polite');
+                    placeholder.style.padding = '2rem';
+                    placeholder.style.textAlign = 'center';
+                    placeholder.style.color = '#4f5f73';
+                    placeholder.textContent = 'Loading entry...';
                     container.appendChild(placeholder);
                     return placeholder;
                 });
@@ -518,12 +534,14 @@
                         container.replaceChild(failedArticle, placeholders[index]);
                     }
                 }
+                container.setAttribute('aria-busy', 'false');
             } catch (error) {
                 console.error('Error loading posts:', error);
                 const container = document.getElementById('posts-container');
                 if (!container) {
                     return;
                 }
+                container.setAttribute('aria-busy', 'false');
                 container.textContent = '';
 
                 const errorMessage = document.createElement('p');
