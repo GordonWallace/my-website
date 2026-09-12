@@ -299,6 +299,10 @@
             if (!normalizedInput || normalizedInput.includes('\\') || normalizedInput.startsWith('/')) {
                 throw new Error(`Invalid path: ${rawPath}`);
             }
+            const rawSegments = normalizedInput.split('/').map((segment) => decodeURIComponent(segment));
+            if (rawSegments.some((segment) => segment === '.' || segment === '..')) {
+                throw new Error(`Path traversal segment is not allowed: ${rawPath}`);
+            }
 
             const normalizedPath = new URL(normalizedInput, 'https://example.local/').pathname.replace(/^\/+/, '');
             if (!normalizedPath.startsWith(`${allowedBaseDirectory}/`)) {
