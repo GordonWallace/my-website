@@ -278,7 +278,21 @@
 
     <script>
         const PROJECT_ID = 'crossing-the-usa-by-rail';
-        const POSTS_SCHEMA_DESCRIPTION = 'Each posts.json entry must include a string "project" field matching a project page ID.';
+        const POSTS_SCHEMA_DESCRIPTION = 'Posts for this page must include "project", "title", "date", and "textFile" string fields.';
+        const MONTH_INDEX = {
+            january: 0,
+            february: 1,
+            march: 2,
+            april: 3,
+            may: 4,
+            june: 5,
+            july: 6,
+            august: 7,
+            september: 8,
+            october: 9,
+            november: 10,
+            december: 11
+        };
 
         function resolveSafeProjectAssetPath(rawPath, allowedBaseDirectory) {
             const normalizedInput = typeof rawPath === 'string' ? rawPath : '';
@@ -337,15 +351,17 @@
                     const img = document.createElement('img');
                     img.src = safeImagePath;
                     img.className = 'post-image';
-                    img.alt = image.caption || '';
+                    const imageCaption = typeof image.caption === 'string' ? image.caption.trim() : '';
+                    img.alt = imageCaption || `${post.title} photo`;
                     img.loading = 'lazy';
 
-                    const caption = document.createElement('p');
-                    caption.className = 'image-caption';
-                    caption.textContent = image.caption || '';
-
                     imageContainer.appendChild(img);
-                    imageContainer.appendChild(caption);
+                    if (imageCaption) {
+                        const caption = document.createElement('p');
+                        caption.className = 'image-caption';
+                        caption.textContent = imageCaption;
+                        imageContainer.appendChild(caption);
+                    }
                     imagesContainer.appendChild(imageContainer);
                 }
 
@@ -387,6 +403,19 @@
             return textResponse.text();
         }
 
+        function parseMonthDayYear(monthName, dayString, yearString) {
+            const monthKey = String(monthName || '').toLowerCase();
+            const month = MONTH_INDEX[monthKey];
+            const day = Number.parseInt(dayString, 10);
+            const year = Number.parseInt(yearString, 10);
+
+            if (!Number.isInteger(month) || Number.isNaN(day) || Number.isNaN(year)) {
+                return Number.NEGATIVE_INFINITY;
+            }
+
+            return Date.UTC(year, month, day);
+        }
+
         async function mapWithConcurrency(items, limit, mapper) {
             const results = new Array(items.length);
             let nextIndex = 0;
@@ -415,16 +444,20 @@
             }
             const sameMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-(\d+),\s*(\d{4})$/);
             const crossMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-([A-Za-z]+)\s+(\d+),\s*(\d{4})$/);
-            let normalizedDate = post.date;
-
             if (sameMonthRangeMatch) {
-                normalizedDate = `${sameMonthRangeMatch[1]} ${sameMonthRangeMatch[3]}, ${sameMonthRangeMatch[4]}`;
-            } else if (crossMonthRangeMatch) {
-                normalizedDate = `${crossMonthRangeMatch[3]} ${crossMonthRangeMatch[4]}, ${crossMonthRangeMatch[5]}`;
+                return parseMonthDayYear(sameMonthRangeMatch[1], sameMonthRangeMatch[3], sameMonthRangeMatch[4]);
             }
 
-            const timestamp = Date.parse(normalizedDate);
-            return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+            if (crossMonthRangeMatch) {
+                return parseMonthDayYear(crossMonthRangeMatch[3], crossMonthRangeMatch[4], crossMonthRangeMatch[5]);
+            }
+
+            const singleDateMatch = post.date.match(/^([A-Za-z]+)\s+(\d+),\s*(\d{4})$/);
+            if (singleDateMatch) {
+                return parseMonthDayYear(singleDateMatch[1], singleDateMatch[2], singleDateMatch[3]);
+            }
+
+            return Number.NEGATIVE_INFINITY;
         }
 
         async function loadPosts() {
@@ -438,14 +471,14 @@
                 if (!Array.isArray(rawPosts)) {
                     throw new Error('Invalid posts.json format: expected an array of posts.');
                 }
-                if (rawPosts.some((post) => !post || typeof post.project !== 'string')) {
-                    throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
-                }
 
                 const posts = rawPosts
-                    .filter((post) => post.project === PROJECT_ID)
+                    .filter((post) => post && post.project === PROJECT_ID)
                     .slice()
                     .sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
+                if (posts.some((post) => !post || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
+                    throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
+                }
                 const container = document.getElementById('posts-container');
                 if (!container) {
                     throw new Error('Missing posts container element.');
