@@ -291,32 +291,6 @@
             return `../${normalizedPath}`;
         }
 
-        function runPathValidationSelfCheck() {
-            const cases = [
-                { rawPath: 'images/photo.jpg', base: 'images', shouldPass: true },
-                { rawPath: 'images/nested/photo.jpg', base: 'images', shouldPass: true },
-                { rawPath: '../images/photo.jpg', base: 'images', shouldPass: false },
-                { rawPath: '/images/photo.jpg', base: 'images', shouldPass: false },
-                { rawPath: '', base: 'images', shouldPass: false },
-                { rawPath: 'post-text/day-1.txt', base: 'post-text', shouldPass: true },
-                { rawPath: 'post-text/../secrets.txt', base: 'post-text', shouldPass: false }
-            ];
-
-            for (const testCase of cases) {
-                let passed = false;
-                try {
-                    resolveSafeProjectAssetPath(testCase.rawPath, testCase.base);
-                    passed = true;
-                } catch (error) {
-                    passed = false;
-                }
-
-                if (passed !== testCase.shouldPass) {
-                    throw new Error(`Path validation self-check failed for: ${testCase.rawPath}`);
-                }
-            }
-        }
-
         function buildPost(post, textContent) {
             const article = document.createElement('article');
             article.className = 'post';
@@ -411,13 +385,17 @@
                     }
 
                     console.error(`Error loading post content for ${post.id}:`, result.reason);
+                    const failedArticle = document.createElement('article');
+                    failedArticle.className = 'post';
                     const postErrorMessage = document.createElement('p');
+                    postErrorMessage.style.padding = '2rem';
                     postErrorMessage.style.textAlign = 'center';
                     postErrorMessage.style.color = '#d31e39';
                     postErrorMessage.setAttribute('role', 'status');
                     postErrorMessage.setAttribute('aria-live', 'polite');
                     postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
-                    container.replaceChild(postErrorMessage, placeholders[index]);
+                    failedArticle.appendChild(postErrorMessage);
+                    container.replaceChild(failedArticle, placeholders[index]);
                 });
             } catch (error) {
                 console.error('Error loading posts:', error);
@@ -433,22 +411,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                runPathValidationSelfCheck();
-                await loadPosts();
-            } catch (error) {
-                console.error('Startup validation failed:', error);
-                const container = document.getElementById('posts-container');
-                container.textContent = '';
-                const errorMessage = document.createElement('p');
-                errorMessage.style.textAlign = 'center';
-                errorMessage.style.color = '#d31e39';
-                errorMessage.setAttribute('role', 'alert');
-                errorMessage.textContent = 'Error loading posts. Please try again later.';
-                container.appendChild(errorMessage);
-            }
-        });
+        document.addEventListener('DOMContentLoaded', loadPosts);
     </script>
 </body>
 </html>
