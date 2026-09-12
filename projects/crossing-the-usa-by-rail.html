@@ -360,20 +360,21 @@
                     container.appendChild(placeholder);
                     return placeholder;
                 });
+                const textResults = await Promise.allSettled(textPromises);
 
                 posts.forEach((post, index) => {
-                    textPromises[index]
-                        .then((textContent) => {
-                            container.replaceChild(buildPost(post, textContent), placeholders[index]);
-                        })
-                        .catch((postError) => {
-                            console.error(`Error loading post content for ${post.id}:`, postError);
-                            const postErrorMessage = document.createElement('p');
-                            postErrorMessage.style.textAlign = 'center';
-                            postErrorMessage.style.color = '#d31e39';
-                            postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
-                            container.replaceChild(postErrorMessage, placeholders[index]);
-                        });
+                    const result = textResults[index];
+                    if (result.status === 'fulfilled') {
+                        container.replaceChild(buildPost(post, result.value), placeholders[index]);
+                        return;
+                    }
+
+                    console.error(`Error loading post content for ${post.id}:`, result.reason);
+                    const postErrorMessage = document.createElement('p');
+                    postErrorMessage.style.textAlign = 'center';
+                    postErrorMessage.style.color = '#d31e39';
+                    postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
+                    container.replaceChild(postErrorMessage, placeholders[index]);
                 });
             } catch (error) {
                 console.error('Error loading posts:', error);
