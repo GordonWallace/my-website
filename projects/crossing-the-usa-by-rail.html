@@ -354,11 +354,17 @@
                 const posts = await response.json();
                 const container = document.getElementById('posts-container');
                 const textPromises = posts.map((post) => fetchTextForPost(post));
+                const placeholders = posts.map(() => {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'post';
+                    container.appendChild(placeholder);
+                    return placeholder;
+                });
 
                 posts.forEach((post, index) => {
                     textPromises[index]
                         .then((textContent) => {
-                            container.appendChild(buildPost(post, textContent));
+                            container.replaceChild(buildPost(post, textContent), placeholders[index]);
                         })
                         .catch((postError) => {
                             console.error(`Error loading post content for ${post.id}:`, postError);
@@ -366,7 +372,7 @@
                             postErrorMessage.style.textAlign = 'center';
                             postErrorMessage.style.color = '#d31e39';
                             postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
-                            container.appendChild(postErrorMessage);
+                            container.replaceChild(postErrorMessage, placeholders[index]);
                         });
                 });
             } catch (error) {
