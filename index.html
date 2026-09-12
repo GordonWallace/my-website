@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crossing the USA by Rail: A Proof of Concept</title>
+    <title>Gordon Wallace | Projects</title>
     <style>
         * {
             margin: 0;
@@ -11,21 +11,28 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Helvetica Neue', 'Arial', sans-serif;
             line-height: 1.6;
             color: #1a1a1a;
-            background-color: #f8f9fa;
+            background: linear-gradient(180deg, #f8f9fa 0%, #eef3f8 100%);
         }
 
-        /* Header */
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
         header {
             background: linear-gradient(135deg, #003e7e 0%, #005eb8 100%);
             color: white;
-            padding: 3rem 1rem 2.5rem;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 62, 126, 0.2);
+            padding: 5rem 1.5rem 4rem;
             position: relative;
+            overflow: hidden;
         }
 
         header::after {
@@ -38,33 +45,189 @@
             background: linear-gradient(90deg, #003e7e 0%, #d31e39 50%, #003e7e 100%);
         }
 
-        header h1 {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        .hero {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .hero-copy {
+            max-width: 720px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.35rem 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        header h1 {
+            font-size: clamp(2.6rem, 6vw, 4.5rem);
+            line-height: 1.05;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
         }
 
         header p {
-            font-size: 1.2rem;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-            opacity: 0.95;
+            font-size: 1.15rem;
+            max-width: 640px;
+            color: rgba(255, 255, 255, 0.92);
         }
 
-        /* Container */
-        .container {
-            max-width: 1000px;
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.9rem 1.4rem;
+            border-radius: 999px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .button-primary {
+            background: white;
+            color: #003e7e;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .button-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        main {
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2.5rem 1rem;
+            padding: 3rem 1.5rem 4rem;
         }
 
-        /* Blog Post */
+        section + section {
+            margin-top: 4rem;
+        }
+
+        .section-heading {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            color: #003e7e;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .section-heading p {
+            color: #4f5f73;
+            max-width: 720px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            display: block;
+            background: white;
+            border: 1px solid #d8e1ec;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 62, 126, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(0, 62, 126, 0.14);
+            border-color: #005eb8;
+        }
+
+        .project-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .project-card-content {
+            padding: 1.5rem;
+        }
+
+        .project-tag {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #d31e39;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem;
+            color: #003e7e;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-card p {
+            color: #425466;
+            margin-bottom: 1rem;
+        }
+
+        .project-link {
+            color: #005eb8;
+            font-weight: 700;
+        }
+
+        .project-detail {
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid #d8e1ec;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 12px 32px rgba(0, 62, 126, 0.08);
+        }
+
+        .project-detail-header {
+            margin-bottom: 2rem;
+        }
+
+        .project-detail-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: #003e7e;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-detail-header p {
+            max-width: 760px;
+            color: #4f5f73;
+        }
+
         .post {
             background: white;
-            margin-bottom: 3rem;
-            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 62, 126, 0.08);
             border: 1px solid #e8eef3;
@@ -84,7 +247,7 @@
         }
 
         .post-title {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             color: #003e7e;
             margin-bottom: 0.5rem;
             font-weight: 700;
@@ -94,7 +257,6 @@
         .post-date {
             color: #6c757d;
             font-size: 0.95rem;
-            font-family: 'Helvetica Neue', 'Arial', sans-serif;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -127,7 +289,6 @@
             width: 100%;
             height: 200px;
             object-fit: cover;
-            cursor: pointer;
             transition: transform 0.3s ease;
         }
 
@@ -138,7 +299,6 @@
         .image-caption {
             font-size: 0.85rem;
             color: #495057;
-            font-family: 'Helvetica Neue', 'Arial', sans-serif;
             padding: 0.6rem 0.8rem;
             text-align: center;
             line-height: 1.4;
@@ -157,7 +317,6 @@
             margin-bottom: 1.2rem;
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 3rem 2rem;
@@ -165,7 +324,6 @@
             font-size: 0.9rem;
             background: linear-gradient(180deg, #f8f9fa 0%, #e8eef3 100%);
             border-top: 3px solid #003e7e;
-            margin-top: 2rem;
         }
 
         footer p {
@@ -173,14 +331,21 @@
             letter-spacing: 0.5px;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
+            header {
+                padding: 4rem 1.25rem 3rem;
             }
 
             header p {
                 font-size: 1rem;
+            }
+
+            main {
+                padding: 2.5rem 1rem 3rem;
+            }
+
+            .project-detail {
+                padding: 1.25rem;
             }
 
             .post-title {
@@ -199,48 +364,78 @@
             .post-content {
                 padding: 1.5rem;
             }
-
-            .post-image {
-                height: 200px;
-            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Crossing the USA by Rail: A Proof of Concept</h1>
-        <p>Can it be done? So it would seem.</p>
+        <div class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">Gordon Wallace</span>
+                <h1>Projects, trips, and experiments worth exploring.</h1>
+                <p>
+                    A home for the projects I want to share, starting with my long-distance rail journey across the United States.
+                </p>
+                <div class="hero-actions">
+                    <a class="button button-primary" href="#projects">Browse projects</a>
+                    <a class="button button-secondary" href="#crossing-the-usa-by-rail">Open the train trip</a>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <div class="container" id="posts-container">
-        <!-- Posts will be loaded here dynamically -->
-    </div>
+    <main>
+        <section id="projects">
+            <div class="section-heading">
+                <h2>Featured projects</h2>
+                <p>
+                    This landing page highlights the work and stories I want front and center. The rail trip is first, and more projects can be added here over time.
+                </p>
+            </div>
+            <div class="projects-grid">
+                <a class="project-card" href="#crossing-the-usa-by-rail">
+                    <img src="images/20251116_073944.jpg" alt="Sunrise over western Ohio seen from the train">
+                    <div class="project-card-content">
+                        <span class="project-tag">Project 01</span>
+                        <h3>Crossing the USA by Rail</h3>
+                        <p>
+                            Notes, photos, and observations from a proof-of-concept trip across the country by train.
+                        </p>
+                        <span class="project-link">View the project &rarr;</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="project-detail" id="crossing-the-usa-by-rail">
+            <div class="project-detail-header">
+                <h2>Crossing the USA by Rail: A Proof of Concept</h2>
+                <p>
+                    The full write-up begins here, with each ride documented below in reverse chronological order.
+                </p>
+            </div>
+            <div id="posts-container"></div>
+        </section>
+    </main>
 
     <footer>
         <p>&copy; 2025 Gordon Wallace</p>
     </footer>
 
     <script>
-        // Load posts from posts.json and text files
         async function loadPosts() {
             try {
-                // Fetch the posts configuration
                 const response = await fetch('posts.json');
                 const posts = await response.json();
-                
                 const container = document.getElementById('posts-container');
-                
-                // Load each post
+
                 for (const post of posts) {
-                    // Fetch the text content
                     const textResponse = await fetch(post.textFile);
                     const textContent = await textResponse.text();
-                    
-                    // Create the post HTML
+
                     const article = document.createElement('article');
                     article.className = 'post';
-                    
-                    // Build images HTML
+
                     let imagesHTML = '';
                     if (post.images && post.images.length > 0) {
                         imagesHTML = '<div class="post-images">';
@@ -254,35 +449,32 @@
                         }
                         imagesHTML += '</div>';
                     }
-                    
-                    // Split text content into paragraphs (split by double newlines or single newlines)
-                    const paragraphs = textContent.trim().split(/\n\n+/).filter(p => p.trim());
+
+                    const paragraphs = textContent.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
                     let contentHTML = '<div class="post-content">';
                     for (const paragraph of paragraphs) {
                         contentHTML += `<p>${paragraph.trim()}</p>`;
                     }
                     contentHTML += '</div>';
-                    
-                    // Assemble the complete post
+
                     article.innerHTML = `
                         <div class="post-header">
-                            <h2 class="post-title">${post.title}</h2>
+                            <h3 class="post-title">${post.title}</h3>
                             <p class="post-date">${post.date}</p>
                         </div>
                         ${imagesHTML}
                         ${contentHTML}
                     `;
-                    
+
                     container.appendChild(article);
                 }
             } catch (error) {
                 console.error('Error loading posts:', error);
-                document.getElementById('posts-container').innerHTML = 
+                document.getElementById('posts-container').innerHTML =
                     '<p style="text-align: center; color: #d31e39;">Error loading posts. Please try again later.</p>';
             }
         }
-        
-        // Load posts when page loads
+
         document.addEventListener('DOMContentLoaded', loadPosts);
     </script>
 </body>
