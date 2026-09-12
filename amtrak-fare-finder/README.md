@@ -33,6 +33,8 @@ shape) is unaffected.
 
 ## Usage
 
+### Command line
+
 ```bash
 pip install -r requirements.txt
 playwright install chromium
@@ -40,6 +42,25 @@ python fare_finder.py --date 2026-03-15
 ```
 
 This prints a JSON object like:
+
+### Web interface
+
+A small Flask app (`app.py`) wraps `fetch_fares()` with a JSON API and a
+static HTML page, so the fare finder can be used from a browser instead of
+the command line:
+
+```bash
+pip install -r requirements.txt
+playwright install chromium
+python app.py
+```
+
+Then open <http://127.0.0.1:5000/> and pick a departure date. The page
+calls `GET /api/fares?date=YYYY-MM-DD`, which runs the same scraper as the
+CLI and returns the JSON document described below (or a `400`/`502` error
+with an `"error"` message if the date is invalid or the lookup fails).
+
+This runs locally; it is not hosted as part of the static site.
 
 ```json
 {

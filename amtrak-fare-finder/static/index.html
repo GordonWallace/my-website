@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amtrak Fare Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(180deg, #f8f9fa 0%, #eef3f8 100%);
+            padding: 2rem 1.5rem 3rem;
+        }
+
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #003e7e;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: #444;
+            margin-bottom: 1.5rem;
+        }
+
+        form {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem;
+        }
+
+        input[type="date"] {
+            padding: 0.5rem 0.6rem;
+            border: 1px solid #c7d0d9;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: #005eb8;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        #status {
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        #status.error {
+            color: #b3261e;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eef1f4;
+        }
+
+        th {
+            background: #003e7e;
+            color: #fff;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Amtrak Fare Finder</h1>
+        <p class="subtitle">Proof of concept: New York Penn Station (NYP) &rarr; Chicago Union Station (CHI).</p>
+
+        <form id="fare-form">
+            <div>
+                <label for="departure-date">Departure date</label>
+                <input type="date" id="departure-date" name="date" required>
+            </div>
+            <button type="submit" id="submit-button">Find fares</button>
+        </form>
+
+        <p id="status" role="status"></p>
+
+        <table id="results-table" hidden>
+            <thead>
+                <tr>
+                    <th>Train</th>
+                    <th>Departs</th>
+                    <th>Arrives</th>
+                    <th>Duration</th>
+                    <th>Fares</th>
+                </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+        </table>
+    </main>
+
+    <script>
+        const form = document.getElementById('fare-form');
+        const statusEl = document.getElementById('status');
+        const table = document.getElementById('results-table');
+        const tbody = document.getElementById('results-body');
+        const submitButton = document.getElementById('submit-button');
+
+        function setStatus(message, isError) {
+            statusEl.textContent = message;
+            statusEl.classList.toggle('error', Boolean(isError));
+        }
+
+        function renderTrains(trains) {
+            tbody.innerHTML = '';
+            if (!trains || trains.length === 0) {
+                table.hidden = true;
+                setStatus('No trains with available fares were found for that date.', false);
+                return;
+            }
+
+            for (const train of trains) {
+                const row = document.createElement('tr');
+
+                const nameCell = document.createElement('td');
+                nameCell.textContent = train.train_name;
+                row.appendChild(nameCell);
+
+                const departCell = document.createElement('td');
+                departCell.textContent = train.departure_time;
+                row.appendChild(departCell);
+
+                const arriveCell = document.createElement('td');
+                arriveCell.textContent = train.arrival_time;
+                row.appendChild(arriveCell);
+
+                const durationCell = document.createElement('td');
+                durationCell.textContent = train.duration;
+                row.appendChild(durationCell);
+
+                const faresCell = document.createElement('td');
+                faresCell.textContent = (train.fares || [])
+                    .map((fare) => `${fare.fare_class}: $${fare.price.toFixed(2)}`)
+                    .join(', ');
+                row.appendChild(faresCell);
+
+                tbody.appendChild(row);
+            }
+
+            table.hidden = false;
+            setStatus(`Found ${trains.length} train${trains.length === 1 ? '' : 's'}.`, false);
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const date = document.getElementById('departure-date').value;
+            if (!date) {
+                return;
+            }
+
+            submitButton.disabled = true;
+            table.hidden = true;
+            setStatus('Searching for fares…', false);
+
+            try {
+                const response = await fetch(`/api/fares?date=${encodeURIComponent(date)}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch fares.');
+                }
+
+                renderTrains(data.trains);
+            } catch (error) {
+                setStatus(error.message || 'Something went wrong while fetching fares.', true);
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
