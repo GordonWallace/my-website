@@ -504,12 +504,12 @@
                 if (!Array.isArray(rawPosts)) {
                     throw new Error('Invalid posts.json format: expected an array of posts.');
                 }
+                if (rawPosts.some((post) => !post || typeof post.project !== 'string' || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
+                    throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
+                }
 
                 const posts = rawPosts
                     .filter((post) => post && post.project === PROJECT_ID);
-                if (posts.some((post) => !post || typeof post.project !== 'string' || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
-                    throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
-                }
                 if (posts.some((post) => getSortableTimestamp(post) === Number.NEGATIVE_INFINITY)) {
                     throw new Error('Invalid posts.json format: unsupported date format.');
                 }
