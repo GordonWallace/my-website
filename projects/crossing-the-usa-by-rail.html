@@ -340,10 +340,16 @@
             content.className = 'post-content';
 
             const paragraphs = textContent.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
-            for (const paragraphText of paragraphs) {
-                const paragraph = document.createElement('p');
-                paragraph.textContent = paragraphText.trim();
-                content.appendChild(paragraph);
+            if (paragraphs.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'No trip notes were included for this entry.';
+                content.appendChild(emptyMessage);
+            } else {
+                for (const paragraphText of paragraphs) {
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = paragraphText.trim();
+                    content.appendChild(paragraph);
+                }
             }
 
             article.appendChild(content);
@@ -359,6 +365,15 @@
             return textResponse.text();
         }
 
+        function getSortableTimestamp(post) {
+            if (!post || typeof post.date !== 'string') {
+                return Number.NEGATIVE_INFINITY;
+            }
+            const normalizedDate = post.date.replace(/(\w+\s+\d+)-\d+,\s*(\d{4})/, '$1, $2');
+            const timestamp = Date.parse(normalizedDate);
+            return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+        }
+
         async function loadPosts() {
             try {
                 const response = await fetch('../posts.json');
@@ -366,7 +381,14 @@
                     throw new Error(`Failed to load posts.json: ${response.status}`);
                 }
 
-                const posts = await response.json();
+                const rawPosts = await response.json();
+                if (!Array.isArray(rawPosts)) {
+                    throw new Error('Invalid posts.json format: expected an array of posts.');
+                }
+
+                const posts = rawPosts
+                    .slice()
+                    .sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
                 const container = document.getElementById('posts-container');
                 const textPromises = posts.map((post) => fetchTextForPost(post));
                 const placeholders = posts.map(() => {
