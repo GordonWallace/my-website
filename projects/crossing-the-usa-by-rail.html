@@ -421,6 +421,13 @@
         }
 
         async function mapWithConcurrency(items, limit, mapper) {
+            if (!Array.isArray(items) || items.length === 0) {
+                return [];
+            }
+            if (!Number.isInteger(limit) || limit < 1) {
+                throw new Error('Concurrency limit must be a positive integer.');
+            }
+
             const results = new Array(items.length);
             let nextIndex = 0;
 
@@ -437,7 +444,7 @@
                 }
             }
 
-            const workerCount = Math.max(1, Math.min(limit, items.length));
+            const workerCount = Math.min(limit, items.length);
             await Promise.all(Array.from({ length: workerCount }, () => worker()));
             return results;
         }
@@ -485,12 +492,11 @@
                 }
 
                 const posts = rawPosts
-                    .filter((post) => post && post.project === PROJECT_ID)
-                    .slice()
-                    .sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
+                    .filter((post) => post && post.project === PROJECT_ID);
                 if (posts.some((post) => !post || typeof post.project !== 'string' || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
                     throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
                 }
+                posts.sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
                 const container = document.getElementById('posts-container');
                 if (!container) {
                     throw new Error('Missing posts container element.');
