@@ -44,11 +44,12 @@ def api_fares():
 
     try:
         result = fetch_fares(date)
-    except Exception as error:  # noqa: BLE001 - surface scraper failures as a 502
-        return jsonify({"error": f"Failed to fetch fares: {error}"}), 502
+    except Exception:  # noqa: BLE001 - surface scraper failures as a generic 502
+        app.logger.exception("Failed to fetch fares for date %s", date)
+        return jsonify({"error": "Failed to fetch fares. Please try again later."}), 502
 
     return jsonify(result)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
