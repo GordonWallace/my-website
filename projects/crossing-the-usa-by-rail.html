@@ -246,7 +246,7 @@
 <body>
     <header>
         <div class="hero">
-            <a class="back-link" href="../index.html">&larr; Back to all projects</a>
+            <a class="back-link" href="../index.html" aria-label="Back to all projects on the landing page">&larr; Back to all projects</a>
             <h1>Crossing the USA by Rail</h1>
             <p>
                 A proof-of-concept long-distance trip documented stop by stop with photos, notes, and observations.
@@ -271,51 +271,86 @@
     </footer>
 
     <script>
+        function buildPost(post, textContent) {
+            const article = document.createElement('article');
+            article.className = 'post';
+
+            const header = document.createElement('div');
+            header.className = 'post-header';
+
+            const title = document.createElement('h3');
+            title.className = 'post-title';
+            title.textContent = post.title;
+
+            const date = document.createElement('p');
+            date.className = 'post-date';
+            date.textContent = post.date;
+
+            header.appendChild(title);
+            header.appendChild(date);
+            article.appendChild(header);
+
+            if (post.images && post.images.length > 0) {
+                const imagesContainer = document.createElement('div');
+                imagesContainer.className = 'post-images';
+
+                for (const image of post.images) {
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'image-container';
+
+                    const img = document.createElement('img');
+                    img.src = `../${image.src}`;
+                    img.className = 'post-image';
+                    img.alt = image.caption || '';
+
+                    const caption = document.createElement('p');
+                    caption.className = 'image-caption';
+                    caption.textContent = image.caption || '';
+
+                    imageContainer.appendChild(img);
+                    imageContainer.appendChild(caption);
+                    imagesContainer.appendChild(imageContainer);
+                }
+
+                article.appendChild(imagesContainer);
+            }
+
+            const content = document.createElement('div');
+            content.className = 'post-content';
+
+            const paragraphs = textContent.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
+            for (const paragraphText of paragraphs) {
+                const paragraph = document.createElement('p');
+                paragraph.textContent = paragraphText.trim();
+                content.appendChild(paragraph);
+            }
+
+            article.appendChild(content);
+            return article;
+        }
+
+        async function fetchTextForPost(post) {
+            const textResponse = await fetch(`../${post.textFile}`);
+            if (!textResponse.ok) {
+                throw new Error(`Failed to load ${post.textFile}: ${textResponse.status}`);
+            }
+            return textResponse.text();
+        }
+
         async function loadPosts() {
             try {
                 const response = await fetch('../posts.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load posts.json: ${response.status}`);
+                }
+
                 const posts = await response.json();
                 const container = document.getElementById('posts-container');
+                const textContents = await Promise.all(posts.map((post) => fetchTextForPost(post)));
 
-                for (const post of posts) {
-                    const textResponse = await fetch(`../${post.textFile}`);
-                    const textContent = await textResponse.text();
-
-                    const article = document.createElement('article');
-                    article.className = 'post';
-
-                    let imagesHTML = '';
-                    if (post.images && post.images.length > 0) {
-                        imagesHTML = '<div class="post-images">';
-                        for (const image of post.images) {
-                            imagesHTML += `
-                                <div class="image-container">
-                                    <img src="../${image.src}" class="post-image" alt="${image.caption || ''}">
-                                    <p class="image-caption">${image.caption || ''}</p>
-                                </div>
-                            `;
-                        }
-                        imagesHTML += '</div>';
-                    }
-
-                    const paragraphs = textContent.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
-                    let contentHTML = '<div class="post-content">';
-                    for (const paragraph of paragraphs) {
-                        contentHTML += `<p>${paragraph.trim()}</p>`;
-                    }
-                    contentHTML += '</div>';
-
-                    article.innerHTML = `
-                        <div class="post-header">
-                            <h3 class="post-title">${post.title}</h3>
-                            <p class="post-date">${post.date}</p>
-                        </div>
-                        ${imagesHTML}
-                        ${contentHTML}
-                    `;
-
-                    container.appendChild(article);
-                }
+                posts.forEach((post, index) => {
+                    container.appendChild(buildPost(post, textContents[index]));
+                });
             } catch (error) {
                 console.error('Error loading posts:', error);
                 document.getElementById('posts-container').innerHTML =
