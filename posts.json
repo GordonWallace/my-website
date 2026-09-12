@@ -1,6 +1,7 @@
 [
     {
     "id": "nyc-to-chicago",
+    "project": "crossing-the-usa-by-rail",
     "title": "Ride 2: New York to Chicago",
     "date": "November 15-16, 2025",
     "textFile": "post-text/nyc-to-chicago.txt",
@@ -33,6 +34,7 @@
   },
   {
     "id": "boston-to-nyc",
+    "project": "crossing-the-usa-by-rail",
     "title": "Ride 1: Boston to New York",
     "date": "November 14, 2025",
     "textFile": "post-text/boston-to-nyc.txt",
