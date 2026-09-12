@@ -57,6 +57,12 @@
             color: #fff;
         }
 
+        .back-link:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
         header h1 {
             font-size: clamp(2.2rem, 5vw, 3.5rem);
             line-height: 1.1;
@@ -302,6 +308,7 @@
                     img.src = `../${image.src}`;
                     img.className = 'post-image';
                     img.alt = image.caption || '';
+                    img.loading = 'lazy';
 
                     const caption = document.createElement('p');
                     caption.className = 'image-caption';
