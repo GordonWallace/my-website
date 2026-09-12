@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="results">
+    <div data-testid="search-result-row">
+      <span data-testid="train-name">Lake Shore Limited</span>
+      <span data-testid="departure-time">3:40 PM</span>
+      <span data-testid="arrival-time">9:45 AM</span>
+      <span data-testid="duration">18h 05m</span>
+      <div data-testid="fare-option">
+        <span data-testid="fare-class">Value</span>
+        <span data-testid="fare-price">$89.00</span>
+      </div>
+      <div data-testid="fare-option">
+        <span data-testid="fare-class">Flexible</span>
+        <span data-testid="fare-price">$129.00</span>
+      </div>
+    </div>
+    <div data-testid="search-result-row">
+      <span data-testid="train-name">Cardinal</span>
+      <span data-testid="departure-time">6:30 AM</span>
+      <span data-testid="arrival-time">8:15 PM</span>
+      <span data-testid="duration">13h 45m</span>
+      <div data-testid="fare-option">
+        <span data-testid="fare-class">Saver</span>
+        <span data-testid="fare-price">$75.00</span>
+      </div>
+    </div>
+    <div data-testid="search-result-row">
+      <!-- No fares available for this row; should be skipped. -->
+      <span data-testid="train-name">Sold Out Train</span>
+      <span data-testid="departure-time">1:00 PM</span>
+      <span data-testid="arrival-time">2:00 AM</span>
+      <span data-testid="duration">13h 00m</span>
+    </div>
+  </div>
+</body>
+</html>
