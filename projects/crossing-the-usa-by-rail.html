@@ -360,8 +360,14 @@
                 });
             } catch (error) {
                 console.error('Error loading posts:', error);
-                document.getElementById('posts-container').innerHTML =
-                    '<p style="text-align: center; color: #d31e39;">Error loading posts. Please try again later.</p>';
+                const container = document.getElementById('posts-container');
+                container.textContent = '';
+
+                const errorMessage = document.createElement('p');
+                errorMessage.style.textAlign = 'center';
+                errorMessage.style.color = '#d31e39';
+                errorMessage.textContent = 'Error loading posts. Please try again later.';
+                container.appendChild(errorMessage);
             }
         }
 
