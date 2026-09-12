@@ -1,0 +1,7 @@
+The goal for this prototype is intentionally narrow: given a day of travel, pull the fare options for an Amtrak trip from New York Penn Station to Chicago Union Station. If that works reliably for one city pair, the same approach can later be generalized to other routes, dates, and passenger counts.
+
+The first place to look is any public resource that Amtrak already exposes. Public schedule data exists, which is helpful for validating station codes, train numbers, and the basic shape of the trip, but those feeds do not appear to include live fares. That means the real fare lookup probably has to come from the same booking flow the website uses for customer searches.
+
+Because of that, the practical plan is to inspect the booking experience for requests that carry the origin, destination, and departure date and then reuse the structured response if one is available. If the booking flow returns machine-readable fare data, that would be the cleanest proof of concept. If it does not, the fallback is to scrape the rendered search results page and normalize the fare buckets from the HTML.
+
+For now, the success criterion is simple: choose a departure day for New York to Chicago, run one search, and capture the fare options that Amtrak makes available for that trip. Once that works, the next step would be turning the experiment into a more repeatable tool with clearer inputs, error handling, and support for more than one route.
