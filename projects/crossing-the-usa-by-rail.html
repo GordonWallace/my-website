@@ -408,6 +408,9 @@
                     .slice()
                     .sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
                 const container = document.getElementById('posts-container');
+                if (!container) {
+                    throw new Error('Missing posts container element.');
+                }
                 if (posts.length === 0) {
                     const emptyMessage = document.createElement('p');
                     emptyMessage.style.textAlign = 'center';
@@ -446,6 +449,9 @@
             } catch (error) {
                 console.error('Error loading posts:', error);
                 const container = document.getElementById('posts-container');
+                if (!container) {
+                    return;
+                }
                 container.textContent = '';
 
                 const errorMessage = document.createElement('p');
