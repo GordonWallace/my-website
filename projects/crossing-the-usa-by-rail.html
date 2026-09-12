@@ -426,8 +426,7 @@
                     postErrorMessage.style.padding = '2rem';
                     postErrorMessage.style.textAlign = 'center';
                     postErrorMessage.style.color = '#d31e39';
-                    postErrorMessage.setAttribute('role', 'status');
-                    postErrorMessage.setAttribute('aria-live', 'polite');
+                    postErrorMessage.setAttribute('role', 'alert');
                     postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
                     failedArticle.appendChild(postErrorMessage);
                     container.replaceChild(failedArticle, placeholders[index]);
