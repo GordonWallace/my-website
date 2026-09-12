@@ -1,0 +1,3 @@
+[submodule "train-trip-planner"]
+	path = train-trip-planner
+	url = https://github.com/GordonWallace/train-trip-planner.git

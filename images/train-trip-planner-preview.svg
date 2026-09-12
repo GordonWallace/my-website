@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Train Trip Planner preview</title>
+  <desc id="desc">Stylized rail planner interface with route cards and a schedule table.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#003e7e"/>
+      <stop offset="100%" stop-color="#005eb8"/>
+    </linearGradient>
+    <linearGradient id="rail" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#f8f9fa" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" rx="40" fill="url(#bg)"/>
+  <circle cx="1045" cy="120" r="110" fill="#ffffff" opacity="0.08"/>
+  <circle cx="140" cy="660" r="170" fill="#ffffff" opacity="0.06"/>
+  <rect x="80" y="90" width="1040" height="620" rx="28" fill="#f7fbff"/>
+  <rect x="120" y="130" width="450" height="220" rx="24" fill="#ffffff" stroke="#d8e1ec" stroke-width="4"/>
+  <rect x="150" y="165" width="190" height="20" rx="10" fill="#d31e39" opacity="0.9"/>
+  <rect x="150" y="205" width="170" height="56" rx="14" fill="#eef3f8"/>
+  <rect x="340" y="205" width="170" height="56" rx="14" fill="#eef3f8"/>
+  <rect x="150" y="282" width="360" height="56" rx="28" fill="#003e7e"/>
+  <rect x="625" y="130" width="455" height="145" rx="24" fill="#ffffff" stroke="#d8e1ec" stroke-width="4"/>
+  <rect x="655" y="165" width="145" height="18" rx="9" fill="#005eb8" opacity="0.85"/>
+  <rect x="655" y="202" width="390" height="15" rx="7.5" fill="#cbd8e5"/>
+  <rect x="655" y="232" width="285" height="15" rx="7.5" fill="#d8e1ec"/>
+  <rect x="120" y="395" width="960" height="255" rx="24" fill="#ffffff" stroke="#d8e1ec" stroke-width="4"/>
+  <rect x="150" y="430" width="900" height="42" rx="12" fill="#eef4fb"/>
+  <rect x="150" y="495" width="900" height="34" rx="10" fill="#ffffff"/>
+  <rect x="150" y="550" width="900" height="34" rx="10" fill="#fff8e8"/>
+  <rect x="150" y="605" width="900" height="34" rx="10" fill="#ffffff"/>
+  <path d="M170 708 C370 610, 580 610, 780 708" fill="none" stroke="url(#rail)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M420 708 C620 610, 830 610, 1030 708" fill="none" stroke="url(#rail)" stroke-width="18" stroke-linecap="round"/>
+</svg>
