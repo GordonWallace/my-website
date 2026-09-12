@@ -45,7 +45,7 @@ function installFetchBridge() {
                 return await handleApiRequest(requestUrl, init);
             } catch (error) {
                 console.error('Bridge API error:', error);
-                return jsonResponse({ error: 'Bridge error', details: String(error) }, 500);
+                return jsonResponse({ error: 'Bridge error' }, 500);
             }
         }
 
