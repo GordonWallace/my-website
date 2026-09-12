@@ -488,7 +488,7 @@
                     .filter((post) => post && post.project === PROJECT_ID)
                     .slice()
                     .sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
-                if (posts.some((post) => !post || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
+                if (posts.some((post) => !post || typeof post.project !== 'string' || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
                     throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
                 }
                 const container = document.getElementById('posts-container');
