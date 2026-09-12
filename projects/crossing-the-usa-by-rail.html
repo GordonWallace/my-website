@@ -317,11 +317,19 @@
                 imagesContainer.className = 'post-images';
 
                 for (const image of post.images) {
+                    let safeImagePath = '';
+                    try {
+                        safeImagePath = resolveSafeProjectAssetPath(image.src, 'images');
+                    } catch (error) {
+                        console.error(`Skipping invalid image path for ${post.id}:`, error);
+                        continue;
+                    }
+
                     const imageContainer = document.createElement('div');
                     imageContainer.className = 'image-container';
 
                     const img = document.createElement('img');
-                    img.src = resolveSafeProjectAssetPath(image.src, 'images');
+                    img.src = safeImagePath;
                     img.className = 'post-image';
                     img.alt = image.caption || '';
                     img.loading = 'lazy';
@@ -341,7 +349,8 @@
             const content = document.createElement('div');
             content.className = 'post-content';
 
-            const paragraphs = textContent.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
+            const normalizedText = String(textContent ?? '');
+            const paragraphs = normalizedText.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
             if (paragraphs.length === 0) {
                 const emptyMessage = document.createElement('p');
                 emptyMessage.textContent = 'No trip notes were included for this entry.';
@@ -359,6 +368,9 @@
         }
 
         async function fetchTextForPost(post) {
+            if (!post || typeof post.textFile !== 'string') {
+                throw new Error(`Invalid post metadata for ${post && post.id ? post.id : 'unknown'}: missing textFile`);
+            }
             const textFilePath = resolveSafeProjectAssetPath(post.textFile, 'post-text');
             const textResponse = await fetch(textFilePath);
             if (!textResponse.ok) {
