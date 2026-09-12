@@ -373,6 +373,7 @@
                     const postErrorMessage = document.createElement('p');
                     postErrorMessage.style.textAlign = 'center';
                     postErrorMessage.style.color = '#d31e39';
+                    postErrorMessage.setAttribute('role', 'alert');
                     postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
                     container.replaceChild(postErrorMessage, placeholders[index]);
                 });
@@ -384,6 +385,7 @@
                 const errorMessage = document.createElement('p');
                 errorMessage.style.textAlign = 'center';
                 errorMessage.style.color = '#d31e39';
+                errorMessage.setAttribute('role', 'alert');
                 errorMessage.textContent = 'Error loading posts. Please try again later.';
                 container.appendChild(errorMessage);
             }
