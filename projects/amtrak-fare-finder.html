@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amtrak Fare Finder | Gordon Wallace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(180deg, #f8f9fa 0%, #eef3f8 100%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        header {
+            background: linear-gradient(135deg, #003e7e 0%, #005eb8 100%);
+            color: white;
+            padding: 4rem 1.5rem 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #003e7e 0%, #d31e39 50%, #003e7e 100%);
+        }
+
+        .hero {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        .back-link:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        header h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            max-width: 740px;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 4rem;
+        }
+
+        .project-detail {
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid #d8e1ec;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 12px 32px rgba(0, 62, 126, 0.08);
+        }
+
+        .project-detail-header {
+            margin-bottom: 2rem;
+        }
+
+        .project-detail-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: #003e7e;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-detail-header p {
+            max-width: 760px;
+            color: #4f5f73;
+        }
+
+        .post {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 62, 126, 0.08);
+            border: 1px solid #e8eef3;
+            transition: all 0.3s ease;
+        }
+
+        .post:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 62, 126, 0.15);
+            border-color: #005eb8;
+        }
+
+        .post-header {
+            padding: 2rem 2.5rem 1.5rem;
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            border-bottom: 3px solid #d31e39;
+        }
+
+        .post-title {
+            font-size: 2.1rem;
+            color: #003e7e;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .post-date {
+            color: #6c757d;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .post-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem 2.5rem;
+            background-color: #fafbfc;
+        }
+
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 62, 126, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-container:hover {
+            box-shadow: 0 4px 12px rgba(0, 62, 126, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-container:hover .post-image {
+            transform: scale(1.03);
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: #495057;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            line-height: 1.4;
+            background-color: #f8f9fa;
+            border-top: 2px solid #e8eef3;
+        }
+
+        .post-content {
+            padding: 2rem 2.5rem 2.5rem;
+            font-size: 1.05rem;
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        .post-content p {
+            margin-bottom: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e8eef3 100%);
+            border-top: 3px solid #003e7e;
+        }
+
+        footer p {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 3rem 1.25rem 2.5rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            main {
+                padding: 2.5rem 1rem 3rem;
+            }
+
+            .project-detail {
+                padding: 1.25rem;
+            }
+
+            .post-title {
+                font-size: 1.6rem;
+            }
+
+            .post-header {
+                padding: 1.5rem 1.5rem 1rem;
+            }
+
+            .post-images {
+                grid-template-columns: 1fr;
+                padding: 1rem 1.5rem;
+            }
+
+            .post-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="hero">
+            <a class="back-link" href="../index.html" aria-label="Back to all projects on the landing page">&larr; Back to all projects</a>
+            <h1>Amtrak Fare Finder</h1>
+            <p>
+                A proof-of-concept project for pulling fare options for a New York to Chicago trip on a chosen day, using public resources first and scraping only as a fallback.
+            </p>
+        </div>
+    </header>
+
+    <main>
+        <section class="project-detail" id="amtrak-fare-finder">
+            <div class="project-detail-header">
+                <h2>Amtrak Fare Finder: A Proof of Concept</h2>
+                <p>
+                    The first goal is narrow on purpose: identify a practical path to show fare options for a single New York to Chicago search before expanding the project further.
+                </p>
+            </div>
+            <div id="posts-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Gordon Wallace</p>
+    </footer>
+
+    <script>
+        const PROJECT_ID = 'amtrak-fare-finder';
+        const POSTS_SCHEMA_DESCRIPTION = 'Posts for this page must include "project", "title", "date", and "textFile" string fields.';
+        const MONTH_INDEX = {
+            january: 0,
+            february: 1,
+            march: 2,
+            april: 3,
+            may: 4,
+            june: 5,
+            july: 6,
+            august: 7,
+            september: 8,
+            october: 9,
+            november: 10,
+            december: 11
+        };
+
+        function resolveSafeProjectAssetPath(rawPath, allowedBaseDirectory) {
+            const normalizedInput = typeof rawPath === 'string' ? rawPath : '';
+            if (!normalizedInput || normalizedInput.includes('\\') || normalizedInput.startsWith('/')) {
+                throw new Error(`Invalid path: ${rawPath}`);
+            }
+            const rawSegments = normalizedInput.split('/').map((segment) => {
+                try {
+                    return decodeURIComponent(segment);
+                } catch (error) {
+                    throw new Error(`Invalid path encoding: ${rawPath}`);
+                }
+            });
+            if (rawSegments.some((segment) => segment === '.' || segment === '..')) {
+                throw new Error(`Path traversal segment is not allowed: ${rawPath}`);
+            }
+
+            const normalizedPath = new URL(normalizedInput, 'https://example.local/').pathname.replace(/^\/+/, '');
+            if (!normalizedPath.startsWith(`${allowedBaseDirectory}/`)) {
+                throw new Error(`Path escapes ${allowedBaseDirectory}: ${rawPath}`);
+            }
+
+            return `../${normalizedPath}`;
+        }
+
+        function buildPost(post, textContent) {
+            const article = document.createElement('article');
+            article.className = 'post';
+
+            const header = document.createElement('div');
+            header.className = 'post-header';
+
+            const title = document.createElement('h3');
+            title.className = 'post-title';
+            title.textContent = post.title;
+
+            const date = document.createElement('p');
+            date.className = 'post-date';
+            date.textContent = post.date;
+
+            header.appendChild(title);
+            header.appendChild(date);
+            article.appendChild(header);
+
+            if (post.images && post.images.length > 0) {
+                const imagesContainer = document.createElement('div');
+                imagesContainer.className = 'post-images';
+
+                for (const image of post.images) {
+                    if (!image || typeof image !== 'object' || typeof image.src !== 'string') {
+                        console.error(`Skipping malformed image entry for ${post.id}.`);
+                        continue;
+                    }
+
+                    let safeImagePath = '';
+                    try {
+                        safeImagePath = resolveSafeProjectAssetPath(image.src, 'images');
+                    } catch (error) {
+                        console.error(`Skipping invalid image path for ${post.id}:`, error);
+                        continue;
+                    }
+
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'image-container';
+
+                    const img = document.createElement('img');
+                    img.src = safeImagePath;
+                    img.className = 'post-image';
+                    const imageCaption = typeof image.caption === 'string' ? image.caption.trim() : '';
+                    img.alt = imageCaption || `${post.title} photo`;
+                    img.loading = 'lazy';
+
+                    imageContainer.appendChild(img);
+                    if (imageCaption) {
+                        const caption = document.createElement('p');
+                        caption.className = 'image-caption';
+                        caption.textContent = imageCaption;
+                        imageContainer.appendChild(caption);
+                    }
+                    imagesContainer.appendChild(imageContainer);
+                }
+
+                if (imagesContainer.childElementCount > 0) {
+                    article.appendChild(imagesContainer);
+                }
+            }
+
+            const content = document.createElement('div');
+            content.className = 'post-content';
+
+            const normalizedText = String(textContent ?? '');
+            const paragraphs = normalizedText.trim().split(/\n\n+/).filter((paragraph) => paragraph.trim());
+            if (paragraphs.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'No project notes were included for this entry.';
+                content.appendChild(emptyMessage);
+            } else {
+                for (const paragraphText of paragraphs) {
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = paragraphText.trim();
+                    content.appendChild(paragraph);
+                }
+            }
+
+            article.appendChild(content);
+            return article;
+        }
+
+        async function fetchTextForPost(post) {
+            if (!post || typeof post.textFile !== 'string') {
+                throw new Error(`Invalid post metadata for ${post && post.id ? post.id : 'unknown'}: missing textFile`);
+            }
+            const textFilePath = resolveSafeProjectAssetPath(post.textFile, 'post-text');
+            const textResponse = await fetch(textFilePath);
+            if (!textResponse.ok) {
+                throw new Error(`Failed to load ${post.textFile}: ${textResponse.status}`);
+            }
+            return textResponse.text();
+        }
+
+        function parseMonthDayYear(monthName, dayString, yearString) {
+            const monthKey = String(monthName || '').toLowerCase();
+            const month = MONTH_INDEX[monthKey];
+            const day = Number.parseInt(dayString, 10);
+            const year = Number.parseInt(yearString, 10);
+
+            if (!Number.isInteger(month) || Number.isNaN(day) || Number.isNaN(year)) {
+                return Number.NEGATIVE_INFINITY;
+            }
+            const timestamp = Date.UTC(year, month, day);
+            const parsedDate = new Date(timestamp);
+            if (
+                parsedDate.getUTCFullYear() !== year
+                || parsedDate.getUTCMonth() !== month
+                || parsedDate.getUTCDate() !== day
+            ) {
+                return Number.NEGATIVE_INFINITY;
+            }
+            return timestamp;
+        }
+
+        async function mapWithConcurrency(items, limit, mapper) {
+            if (!Array.isArray(items) || items.length === 0) {
+                return [];
+            }
+            if (!Number.isInteger(limit) || limit < 1) {
+                throw new Error('Concurrency limit must be a positive integer.');
+            }
+
+            const results = new Array(items.length);
+            let nextIndex = 0;
+
+            async function worker() {
+                while (nextIndex < items.length) {
+                    const currentIndex = nextIndex;
+                    nextIndex += 1;
+
+                    try {
+                        results[currentIndex] = { status: 'fulfilled', value: await mapper(items[currentIndex]) };
+                    } catch (error) {
+                        results[currentIndex] = { status: 'rejected', reason: error };
+                    }
+                }
+            }
+
+            const workerCount = Math.min(limit, items.length);
+            await Promise.all(Array.from({ length: workerCount }, () => worker()));
+            return results;
+        }
+
+        function getSortableTimestamp(post) {
+            if (!post || typeof post.date !== 'string') {
+                return Number.NEGATIVE_INFINITY;
+            }
+            const sameMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-(\d+),\s*(\d{4})$/);
+            const crossMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-([A-Za-z]+)\s+(\d+),\s*(\d{4})(?:\/(\d{4}))?$/);
+            if (sameMonthRangeMatch) {
+                return parseMonthDayYear(sameMonthRangeMatch[1], sameMonthRangeMatch[3], sameMonthRangeMatch[4]);
+            }
+
+            if (crossMonthRangeMatch) {
+                const startMonthIndex = MONTH_INDEX[String(crossMonthRangeMatch[1]).toLowerCase()];
+                const endMonthIndex = MONTH_INDEX[String(crossMonthRangeMatch[3]).toLowerCase()];
+                const startYear = Number.parseInt(crossMonthRangeMatch[5], 10);
+                const explicitEndYear = crossMonthRangeMatch[6] ? Number.parseInt(crossMonthRangeMatch[6], 10) : null;
+                const derivedEndYear = explicitEndYear
+                    || (Number.isInteger(startMonthIndex) && Number.isInteger(endMonthIndex) && endMonthIndex < startMonthIndex
+                        ? startYear + 1
+                        : startYear);
+                return parseMonthDayYear(crossMonthRangeMatch[3], crossMonthRangeMatch[4], String(derivedEndYear));
+            }
+
+            const singleDateMatch = post.date.match(/^([A-Za-z]+)\s+(\d+),\s*(\d{4})$/);
+            if (singleDateMatch) {
+                return parseMonthDayYear(singleDateMatch[1], singleDateMatch[2], singleDateMatch[3]);
+            }
+
+            return Number.NEGATIVE_INFINITY;
+        }
+
+        async function loadPosts() {
+            try {
+                const response = await fetch('../posts.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load posts.json: ${response.status}`);
+                }
+
+                const rawPosts = await response.json();
+                if (!Array.isArray(rawPosts)) {
+                    throw new Error('Invalid posts.json format: expected an array of posts.');
+                }
+                if (rawPosts.some((post) => !post || typeof post.project !== 'string' || typeof post.title !== 'string' || typeof post.date !== 'string' || typeof post.textFile !== 'string')) {
+                    throw new Error(`Invalid posts.json format: ${POSTS_SCHEMA_DESCRIPTION}`);
+                }
+
+                const posts = rawPosts
+                    .filter((post) => post && post.project === PROJECT_ID);
+                if (posts.some((post) => getSortableTimestamp(post) === Number.NEGATIVE_INFINITY)) {
+                    throw new Error('Invalid posts.json format: unsupported date format.');
+                }
+                posts.sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
+                const container = document.getElementById('posts-container');
+                if (!container) {
+                    throw new Error('Missing posts container element.');
+                }
+                container.setAttribute('aria-busy', 'true');
+                if (posts.length === 0) {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.style.textAlign = 'center';
+                    emptyMessage.textContent = 'No entries are available for this project yet.';
+                    container.appendChild(emptyMessage);
+                    container.setAttribute('aria-busy', 'false');
+                    return;
+                }
+                const placeholders = posts.map(() => {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'post';
+                    placeholder.setAttribute('role', 'status');
+                    placeholder.setAttribute('aria-live', 'polite');
+                    placeholder.style.padding = '2rem';
+                    placeholder.style.textAlign = 'center';
+                    placeholder.style.color = '#4f5f73';
+                    placeholder.textContent = 'Loading entry...';
+                    container.appendChild(placeholder);
+                    return placeholder;
+                });
+                const textResults = await mapWithConcurrency(posts, 4, fetchTextForPost);
+
+                for (let index = 0; index < posts.length; index += 1) {
+                    const post = posts[index];
+                    const result = textResults[index];
+                    if (result.status === 'fulfilled') {
+                        container.replaceChild(buildPost(post, result.value), placeholders[index]);
+                    } else {
+                        const postError = result.reason;
+                        console.error(`Error loading post content for ${post.id}:`, postError);
+                        const failedArticle = document.createElement('article');
+                        failedArticle.className = 'post';
+                        const postErrorMessage = document.createElement('p');
+                        postErrorMessage.style.padding = '2rem';
+                        postErrorMessage.style.textAlign = 'center';
+                        postErrorMessage.style.color = '#d31e39';
+                        postErrorMessage.setAttribute('role', 'alert');
+                        postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
+                        failedArticle.appendChild(postErrorMessage);
+                        container.replaceChild(failedArticle, placeholders[index]);
+                    }
+                }
+                container.setAttribute('aria-busy', 'false');
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                const container = document.getElementById('posts-container');
+                if (!container) {
+                    return;
+                }
+                container.setAttribute('aria-busy', 'false');
+                container.textContent = '';
+
+                const errorMessage = document.createElement('p');
+                errorMessage.style.textAlign = 'center';
+                errorMessage.style.color = '#d31e39';
+                errorMessage.setAttribute('role', 'alert');
+                errorMessage.textContent = 'Error loading posts. Please try again later.';
+                container.appendChild(errorMessage);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadPosts);
+        } else {
+            loadPosts();
+        }
+    </script>
+</body>
+</html>
