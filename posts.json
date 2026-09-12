@@ -48,5 +48,13 @@
         "caption": "Seating in coach on the Northeast Regional - more spacious than a plane, more cramped than the long-distance trains I took later in my trip"
       }
     ]
+  },
+  {
+    "id": "amtrak-fare-finder-poc",
+    "project": "amtrak-fare-finder",
+    "title": "Proof of Concept: New York to Chicago",
+    "date": "September 12, 2026",
+    "textFile": "post-text/amtrak-fare-finder-poc.txt",
+    "images": []
   }
 ]
