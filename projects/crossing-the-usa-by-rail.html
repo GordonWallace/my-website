@@ -317,6 +317,11 @@
                 imagesContainer.className = 'post-images';
 
                 for (const image of post.images) {
+                    if (!image || typeof image !== 'object' || typeof image.src !== 'string') {
+                        console.error(`Skipping malformed image entry for ${post.id}.`);
+                        continue;
+                    }
+
                     let safeImagePath = '';
                     try {
                         safeImagePath = resolveSafeProjectAssetPath(image.src, 'images');
@@ -343,7 +348,9 @@
                     imagesContainer.appendChild(imageContainer);
                 }
 
-                article.appendChild(imagesContainer);
+                if (imagesContainer.childElementCount > 0) {
+                    article.appendChild(imagesContainer);
+                }
             }
 
             const content = document.createElement('div');
@@ -418,34 +425,31 @@
                     container.appendChild(emptyMessage);
                     return;
                 }
-                const textPromises = posts.map((post) => fetchTextForPost(post));
                 const placeholders = posts.map(() => {
                     const placeholder = document.createElement('div');
                     placeholder.className = 'post';
                     container.appendChild(placeholder);
                     return placeholder;
                 });
-                const textResults = await Promise.allSettled(textPromises);
-
-                posts.forEach((post, index) => {
-                    const result = textResults[index];
-                    if (result.status === 'fulfilled') {
-                        container.replaceChild(buildPost(post, result.value), placeholders[index]);
-                        return;
+                for (let index = 0; index < posts.length; index += 1) {
+                    const post = posts[index];
+                    try {
+                        const textContent = await fetchTextForPost(post);
+                        container.replaceChild(buildPost(post, textContent), placeholders[index]);
+                    } catch (postError) {
+                        console.error(`Error loading post content for ${post.id}:`, postError);
+                        const failedArticle = document.createElement('article');
+                        failedArticle.className = 'post';
+                        const postErrorMessage = document.createElement('p');
+                        postErrorMessage.style.padding = '2rem';
+                        postErrorMessage.style.textAlign = 'center';
+                        postErrorMessage.style.color = '#d31e39';
+                        postErrorMessage.setAttribute('role', 'alert');
+                        postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
+                        failedArticle.appendChild(postErrorMessage);
+                        container.replaceChild(failedArticle, placeholders[index]);
                     }
-
-                    console.error(`Error loading post content for ${post.id}:`, result.reason);
-                    const failedArticle = document.createElement('article');
-                    failedArticle.className = 'post';
-                    const postErrorMessage = document.createElement('p');
-                    postErrorMessage.style.padding = '2rem';
-                    postErrorMessage.style.textAlign = 'center';
-                    postErrorMessage.style.color = '#d31e39';
-                    postErrorMessage.setAttribute('role', 'alert');
-                    postErrorMessage.textContent = `Unable to load "${post.title}" right now.`;
-                    failedArticle.appendChild(postErrorMessage);
-                    container.replaceChild(failedArticle, placeholders[index]);
-                });
+                }
             } catch (error) {
                 console.error('Error loading posts:', error);
                 const container = document.getElementById('posts-container');
