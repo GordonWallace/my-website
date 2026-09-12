@@ -277,6 +277,20 @@
     </footer>
 
     <script>
+        function resolveSafeProjectAssetPath(rawPath, allowedBaseDirectory) {
+            const normalizedInput = typeof rawPath === 'string' ? rawPath : '';
+            if (!normalizedInput || normalizedInput.includes('\\') || normalizedInput.startsWith('/')) {
+                throw new Error(`Invalid path: ${rawPath}`);
+            }
+
+            const normalizedPath = new URL(normalizedInput, 'https://example.local/').pathname.replace(/^\/+/, '');
+            if (!normalizedPath.startsWith(`${allowedBaseDirectory}/`)) {
+                throw new Error(`Path escapes ${allowedBaseDirectory}: ${rawPath}`);
+            }
+
+            return `../${normalizedPath}`;
+        }
+
         function buildPost(post, textContent) {
             const article = document.createElement('article');
             article.className = 'post';
@@ -305,7 +319,7 @@
                     imageContainer.className = 'image-container';
 
                     const img = document.createElement('img');
-                    img.src = `../${image.src}`;
+                    img.src = resolveSafeProjectAssetPath(image.src, 'images');
                     img.className = 'post-image';
                     img.alt = image.caption || '';
                     img.loading = 'lazy';
@@ -337,7 +351,8 @@
         }
 
         async function fetchTextForPost(post) {
-            const textResponse = await fetch(`../${post.textFile}`);
+            const textFilePath = resolveSafeProjectAssetPath(post.textFile, 'post-text');
+            const textResponse = await fetch(textFilePath);
             if (!textResponse.ok) {
                 throw new Error(`Failed to load ${post.textFile}: ${textResponse.status}`);
             }
