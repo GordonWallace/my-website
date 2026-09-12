@@ -390,10 +390,16 @@
             if (!post || typeof post.date !== 'string') {
                 return Number.NEGATIVE_INFINITY;
             }
-            const rangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-(\d+),\s*(\d{4})$/);
-            const normalizedDate = rangeMatch
-                ? `${rangeMatch[1]} ${rangeMatch[3]}, ${rangeMatch[4]}`
-                : post.date;
+            const sameMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-(\d+),\s*(\d{4})$/);
+            const crossMonthRangeMatch = post.date.match(/^([A-Za-z]+)\s+(\d+)-([A-Za-z]+)\s+(\d+),\s*(\d{4})$/);
+            let normalizedDate = post.date;
+
+            if (sameMonthRangeMatch) {
+                normalizedDate = `${sameMonthRangeMatch[1]} ${sameMonthRangeMatch[3]}, ${sameMonthRangeMatch[4]}`;
+            } else if (crossMonthRangeMatch) {
+                normalizedDate = `${crossMonthRangeMatch[3]} ${crossMonthRangeMatch[4]}, ${crossMonthRangeMatch[5]}`;
+            }
+
             const timestamp = Date.parse(normalizedDate);
             return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
         }
