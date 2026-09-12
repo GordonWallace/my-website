@@ -277,6 +277,8 @@
     </footer>
 
     <script>
+        const PROJECT_ID = 'crossing-the-usa-by-rail';
+
         function resolveSafeProjectAssetPath(rawPath, allowedBaseDirectory) {
             const normalizedInput = typeof rawPath === 'string' ? rawPath : '';
             if (!normalizedInput || normalizedInput.includes('\\') || normalizedInput.startsWith('/')) {
@@ -390,9 +392,17 @@
                 }
 
                 const posts = rawPosts
+                    .filter((post) => post.project === PROJECT_ID)
                     .slice()
                     .sort((a, b) => getSortableTimestamp(b) - getSortableTimestamp(a));
                 const container = document.getElementById('posts-container');
+                if (posts.length === 0) {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.style.textAlign = 'center';
+                    emptyMessage.textContent = 'No entries are available for this project yet.';
+                    container.appendChild(emptyMessage);
+                    return;
+                }
                 const textPromises = posts.map((post) => fetchTextForPost(post));
                 const placeholders = posts.map(() => {
                     const placeholder = document.createElement('div');
