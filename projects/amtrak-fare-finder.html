@@ -580,7 +580,11 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadPosts);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadPosts);
+        } else {
+            loadPosts();
+        }
     </script>
 </body>
 </html>

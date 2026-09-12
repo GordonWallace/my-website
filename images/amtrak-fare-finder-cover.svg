@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Amtrak Fare Finder cover art</title>
+  <desc id="desc">A stylized route board showing a New York to Chicago Amtrak fare search.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003e7e"/>
+      <stop offset="100%" stop-color="#005eb8"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#eef3f8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <circle cx="1040" cy="120" r="180" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="180" cy="620" r="210" fill="rgba(255,255,255,0.06)"/>
+  <rect x="110" y="110" width="980" height="500" rx="32" fill="url(#panel)"/>
+  <rect x="110" y="110" width="980" height="90" rx="32" fill="#d31e39"/>
+  <text x="160" y="167" fill="#ffffff" font-family="Helvetica Neue, Arial, sans-serif" font-size="46" font-weight="700">Amtrak Fare Finder</text>
+  <text x="160" y="260" fill="#003e7e" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="700">NYP → CHI</text>
+  <text x="160" y="305" fill="#4f5f73" font-family="Helvetica Neue, Arial, sans-serif" font-size="24">Proof of concept fare search for a chosen departure date</text>
+  <rect x="160" y="360" width="880" height="72" rx="18" fill="#ffffff" stroke="#d8e1ec" stroke-width="3"/>
+  <rect x="160" y="450" width="880" height="72" rx="18" fill="#ffffff" stroke="#d8e1ec" stroke-width="3"/>
+  <text x="200" y="405" fill="#003e7e" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">Coach</text>
+  <text x="200" y="495" fill="#003e7e" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">Roomette / sleeper</text>
+  <text x="910" y="405" fill="#005eb8" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">$ fare options</text>
+  <text x="860" y="495" fill="#005eb8" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700">fallback scrape</text>
+  <path d="M770 255c-8-40-44-72-94-72H470c-50 0-86 32-94 72l-18 88h430l-18-88z" fill="#005eb8"/>
+  <rect x="410" y="343" width="326" height="88" rx="20" fill="#003e7e"/>
+  <rect x="448" y="225" width="85" height="70" rx="14" fill="#eef3f8"/>
+  <rect x="555" y="225" width="85" height="70" rx="14" fill="#eef3f8"/>
+  <rect x="662" y="225" width="45" height="70" rx="14" fill="#eef3f8"/>
+  <circle cx="470" cy="448" r="30" fill="#1a1a1a"/>
+  <circle cx="674" cy="448" r="30" fill="#1a1a1a"/>
+</svg>
