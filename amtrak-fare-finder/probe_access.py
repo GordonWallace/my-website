@@ -1,0 +1,145 @@
+"""Check whether amtrak.com serves real pages to a cloud-hosted browser.
+
+Loads the Amtrak homepage and the NYP -> CHI search URL in headless
+Chromium and reports the HTTP status, final URL, page title, whether
+bot-protection markers appear, and whether fare result rows rendered.
+Screenshots and HTML are saved to ``probe-output/``.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+from datetime import date, timedelta
+from urllib.parse import urlparse
+
+from playwright.sync_api import sync_playwright
+
+from fare_finder import build_search_url
+
+BLOCK_MARKERS = ("access denied", "reference #", "akamai", "captcha", "unusual traffic", "request unsuccessful")
+OUT_DIR = "probe-output"
+
+
+def probe(page, name: str, url: str) -> dict:
+    result = {"name": name, "url": url}
+    try:
+        response = page.goto(url, wait_until="domcontentloaded", timeout=45_000)
+        page.wait_for_timeout(15_000)
+        html = page.content()
+        lowered = html.lower()
+        result.update(
+            status=response.status if response else None,
+            final_url=page.url,
+            title=page.title(),
+            html_bytes=len(html),
+            block_markers=[m for m in BLOCK_MARKERS if m in lowered],
+            result_rows=page.locator('[data-testid="search-result-row"]').count(),
+            body_text_start=page.inner_text("body")[:400] if page.locator("body").count() else "",
+        )
+        page.screenshot(path=f"{OUT_DIR}/{name}.png", full_page=True)
+        with open(f"{OUT_DIR}/{name}.html", "w", encoding="utf-8") as f:
+            f.write(html)
+    except Exception as exc:  # noqa: BLE001 - report every failure mode
+        result["error"] = f"{type(exc).__name__}: {exc}"
+    return result
+
+
+def probe_form_search(page, search_date: date) -> dict:
+    """Search NYP -> CHI the way a person would, through the homepage form."""
+    result = {"name": "form-search"}
+    api_calls = []
+
+    def on_response(response):
+        host = urlparse(response.url).hostname or ""
+        if host.endswith("amtrak.com") and response.request.resource_type in ("xhr", "fetch", "document"):
+            api_calls.append({"status": response.status, "url": response.url[:160]})
+
+    page.on("response", on_response)
+    try:
+        page.goto("https://www.amtrak.com/home", wait_until="domcontentloaded", timeout=45_000)
+        page.wait_for_timeout(8_000)
+        for consent in ("Accept", "Accept All", "I Accept", "Close"):
+            button = page.get_by_role("button", name=consent, exact=True)
+            if button.count() and button.first.is_visible():
+                button.first.click(force=True)
+                page.wait_for_timeout(1_000)
+        result["inputs"] = page.eval_on_selector_all(
+            "input",
+            "els => els.filter(e => e.offsetParent).map(e => ({id: e.id, name: e.name, aria: e.getAttribute('aria-label'), placeholder: e.placeholder}))",
+        )
+        steps = []
+        for label, code, pattern in (("From", "NYP", r"\(NYP\)"), ("To", "Chicago", r"\(CHI\)")):
+            field = page.locator(f'input[aria-label="{label}"]').first
+            page.keyboard.press("Escape")
+            field.focus()
+            page.wait_for_timeout(1_000)
+            field.fill("")
+            page.keyboard.type(code, delay=200)
+            page.wait_for_timeout(4_000)
+            candidates = page.locator('li:visible, [role="option"]:visible').filter(has_text=re.compile(pattern, re.I))
+            steps.append(f"{label} candidates: {candidates.count()} " + str([t[:80] for t in candidates.all_inner_texts()[:3]]))
+            if candidates.count():
+                candidates.first.click(force=True)
+            elif label == "From":
+                page.keyboard.press("ArrowDown")
+                page.keyboard.press("Enter")
+            else:
+                steps.append(f"{label} overlay: " + page.locator("body").evaluate(
+                    "b => [...b.querySelectorAll('ul,[role=listbox]')].filter(e => e.offsetParent).map(e => e.outerHTML.slice(0, 400)).join(' || ')"
+                )[:1500])
+            page.wait_for_timeout(1_000)
+            steps.append(f"{label} value now: {field.input_value()!r}")
+        depart = page.locator("input#am-form-field-control-4").first
+        depart.focus()
+        depart.fill(search_date.strftime("%m/%d/%Y"))
+        depart.press("Tab")
+        steps.append(f"date value now: {depart.input_value()!r}")
+        page.get_by_role("button", name=re.compile("find trains", re.I)).first.click(force=True)
+        steps.append("clicked FIND TRAINS")
+        page.wait_for_timeout(25_000)
+        steps.append("visible errors: " + str(page.locator('[role="alert"]:visible, .error:visible, [class*="error"]:visible').all_inner_texts()[:5]))
+        result["steps"] = steps
+        html = page.content()
+        result.update(
+            final_url=page.url,
+            title=page.title(),
+            block_markers=[m for m in BLOCK_MARKERS if m in html.lower()],
+            body_text_start=page.inner_text("body")[:800],
+        )
+        page.screenshot(path=f"{OUT_DIR}/form-search.png", full_page=True)
+        with open(f"{OUT_DIR}/form-search.html", "w", encoding="utf-8") as f:
+            f.write(html)
+    except Exception as exc:  # noqa: BLE001 - report every failure mode
+        result["error"] = f"{type(exc).__name__}: {exc}"[:2500]
+        try:
+            page.screenshot(path=f"{OUT_DIR}/form-search-error.png", full_page=True)
+        except Exception:  # noqa: BLE001
+            pass
+    result["api_calls"] = api_calls[-40:]
+    return result
+
+
+def main() -> None:
+    os.makedirs(OUT_DIR, exist_ok=True)
+    search_date = (date.today() + timedelta(days=30)).isoformat()
+    targets = [
+        ("homepage", "https://www.amtrak.com/"),
+        ("search", build_search_url(search_date)),
+    ]
+    results = []
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        try:
+            page = browser.new_page()
+            for name, url in targets:
+                results.append(probe(page, name, url))
+            results.append(probe_form_search(browser.new_page(), date.today() + timedelta(days=30)))
+        finally:
+            browser.close()
+    print(json.dumps(results, indent=2))
+
+
+if __name__ == "__main__":
+    main()

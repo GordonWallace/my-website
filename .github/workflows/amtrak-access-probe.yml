@@ -1,0 +1,33 @@
+name: Amtrak access probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-eiy6r4]
+    paths:
+      - amtrak-fare-finder/probe_access.py
+      - amtrak-fare-finder/probe_api.py
+      - .github/workflows/amtrak-access-probe.yml
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amtrak-fare-finder
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: curl -sS https://api.ipify.org && echo
+      - run: python probe_api.py
+      - run: "true"
+        continue-on-error: true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe-output
+          path: amtrak-fare-finder/probe-output/
