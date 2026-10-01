@@ -60,6 +60,11 @@ def probe_form_search(page, search_date: date) -> dict:
     try:
         page.goto("https://www.amtrak.com/home", wait_until="domcontentloaded", timeout=45_000)
         page.wait_for_timeout(8_000)
+        for consent in ("Accept", "Accept All", "I Accept", "Close"):
+            button = page.get_by_role("button", name=consent, exact=True)
+            if button.count() and button.first.is_visible():
+                button.first.click(force=True)
+                page.wait_for_timeout(1_000)
         result["inputs"] = page.eval_on_selector_all(
             "input",
             "els => els.filter(e => e.offsetParent).map(e => ({id: e.id, name: e.name, aria: e.getAttribute('aria-label'), placeholder: e.placeholder}))",
@@ -67,22 +72,23 @@ def probe_form_search(page, search_date: date) -> dict:
         steps = []
         for label, code in (("From", "NYP"), ("To", "CHI")):
             field = page.locator(f'input[aria-label="{label}"]').first
-            field.click()
-            field.fill(code)
+            field.focus()
+            field.fill("")
+            page.keyboard.type(code, delay=120)
             page.wait_for_timeout(2_500)
             option = page.get_by_role("option").first
             if option.count():
                 steps.append(f"{label}: picked '{option.inner_text()[:60]}'")
-                option.click()
+                option.click(force=True)
             else:
                 steps.append(f"{label}: no autocomplete option")
                 field.press("Enter")
         depart = page.locator("input#am-form-field-control-4").first
-        depart.click()
+        depart.focus()
         depart.fill(search_date.strftime("%m/%d/%Y"))
         depart.press("Escape")
         steps.append("date filled")
-        page.get_by_role("button", name=re.compile("find trains", re.I)).first.click()
+        page.get_by_role("button", name=re.compile("find trains", re.I)).first.click(force=True)
         steps.append("clicked FIND TRAINS")
         page.wait_for_timeout(25_000)
         result["steps"] = steps
@@ -97,7 +103,7 @@ def probe_form_search(page, search_date: date) -> dict:
         with open(f"{OUT_DIR}/form-search.html", "w", encoding="utf-8") as f:
             f.write(html)
     except Exception as exc:  # noqa: BLE001 - report every failure mode
-        result["error"] = f"{type(exc).__name__}: {exc}"[:600]
+        result["error"] = f"{type(exc).__name__}: {exc}"[:2500]
         try:
             page.screenshot(path=f"{OUT_DIR}/form-search-error.png", full_page=True)
         except Exception:  # noqa: BLE001
