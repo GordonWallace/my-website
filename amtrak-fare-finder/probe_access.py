@@ -12,6 +12,7 @@ import json
 import os
 import re
 from datetime import date, timedelta
+from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright
 
@@ -51,7 +52,8 @@ def probe_form_search(page, search_date: date) -> dict:
     api_calls = []
 
     def on_response(response):
-        if "amtrak.com" in response.url and response.request.resource_type in ("xhr", "fetch"):
+        host = urlparse(response.url).hostname or ""
+        if host.endswith("amtrak.com") and response.request.resource_type in ("xhr", "fetch", "document"):
             api_calls.append({"status": response.status, "url": response.url[:160]})
 
     page.on("response", on_response)
@@ -64,7 +66,7 @@ def probe_form_search(page, search_date: date) -> dict:
         )
         steps = []
         for label, code in (("From", "NYP"), ("To", "CHI")):
-            field = page.get_by_label(label, exact=True).first
+            field = page.locator(f'input[aria-label="{label}"]').first
             field.click()
             field.fill(code)
             page.wait_for_timeout(2_500)
@@ -75,7 +77,7 @@ def probe_form_search(page, search_date: date) -> dict:
             else:
                 steps.append(f"{label}: no autocomplete option")
                 field.press("Enter")
-        depart = page.get_by_label("Depart Date").first
+        depart = page.locator("input#am-form-field-control-4").first
         depart.click()
         depart.fill(search_date.strftime("%m/%d/%Y"))
         depart.press("Escape")
