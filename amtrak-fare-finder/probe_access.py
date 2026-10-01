@@ -70,7 +70,7 @@ def probe_form_search(page, search_date: date) -> dict:
             "els => els.filter(e => e.offsetParent).map(e => ({id: e.id, name: e.name, aria: e.getAttribute('aria-label'), placeholder: e.placeholder}))",
         )
         steps = []
-        for label, code in (("From", "NYP"), ("To", "Chicago")):
+        for label, code, pattern in (("From", "NYP", "Moynihan|New York"), ("To", "Chicago", "Chicago.*Union|Union.*Chicago|CHI")):
             field = page.locator(f'input[aria-label="{label}"]').first
             page.keyboard.press("Escape")
             field.focus()
@@ -78,10 +78,14 @@ def probe_form_search(page, search_date: date) -> dict:
             field.fill("")
             page.keyboard.type(code, delay=200)
             page.wait_for_timeout(4_000)
-            listbox = page.locator('[role="listbox"]:visible, [id*="autocomplete"]:visible').first
-            steps.append(f"{label} listbox: " + (listbox.evaluate("e => e.outerHTML")[:700] if listbox.count() else "none"))
-            page.keyboard.press("ArrowDown")
-            page.keyboard.press("Enter")
+            candidates = page.locator('li:visible, [role="option"]:visible').filter(has_text=re.compile(pattern, re.I))
+            steps.append(f"{label} candidates: {candidates.count()} " + str([t[:80] for t in candidates.all_inner_texts()[:3]]))
+            if candidates.count():
+                candidates.first.click(force=True)
+            else:
+                steps.append(f"{label} overlay: " + page.locator("body").evaluate(
+                    "b => [...b.querySelectorAll('ul,[role=listbox]')].filter(e => e.offsetParent).map(e => e.outerHTML.slice(0, 400)).join(' || ')"
+                )[:1500])
             page.wait_for_timeout(1_000)
             steps.append(f"{label} value now: {field.input_value()!r}")
         depart = page.locator("input#am-form-field-control-4").first
