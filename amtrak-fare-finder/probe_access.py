@@ -70,7 +70,7 @@ def probe_form_search(page, search_date: date) -> dict:
             "els => els.filter(e => e.offsetParent).map(e => ({id: e.id, name: e.name, aria: e.getAttribute('aria-label'), placeholder: e.placeholder}))",
         )
         steps = []
-        for label, code, pattern in (("From", "NYP", "Moynihan|New York"), ("To", "Chicago", "Chicago.*Union|Union.*Chicago|CHI")):
+        for label, code, pattern in (("From", "NYP", r"\(NYP\)"), ("To", "Chicago", r"\(CHI\)")):
             field = page.locator(f'input[aria-label="{label}"]').first
             page.keyboard.press("Escape")
             field.focus()
@@ -82,6 +82,9 @@ def probe_form_search(page, search_date: date) -> dict:
             steps.append(f"{label} candidates: {candidates.count()} " + str([t[:80] for t in candidates.all_inner_texts()[:3]]))
             if candidates.count():
                 candidates.first.click(force=True)
+            elif label == "From":
+                page.keyboard.press("ArrowDown")
+                page.keyboard.press("Enter")
             else:
                 steps.append(f"{label} overlay: " + page.locator("body").evaluate(
                     "b => [...b.querySelectorAll('ul,[role=listbox]')].filter(e => e.offsetParent).map(e => e.outerHTML.slice(0, 400)).join(' || ')"
