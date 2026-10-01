@@ -10,8 +10,6 @@ Prints status, size and a short summary of each response.
 from __future__ import annotations
 
 import json
-import random
-import time
 from datetime import date, timedelta
 import urllib.request
 
@@ -46,13 +44,11 @@ def body(depart: str) -> dict:
 
 
 def summarize(status: int, text: str) -> dict:
-    out = {"status": status, "bytes": len(text), "start": text[:200]}
+    out = {"status": status, "bytes": len(text), "start": text[:300]}
     try:
         data = json.loads(text)
         out["json_top_keys"] = list(data)[:10] if isinstance(data, dict) else type(data).__name__
-        legs = (((data.get("data") or {}).get("journeySolutionOption") or {}).get("journeyLegs") or [{}])[0].get("journeyLegOptions") or []
-        out["train_options"] = len(legs)
-        out["first_option"] = json.dumps(legs[0])[:600] if legs else None
+        out["train_name_hits"] = text.count("trainName") + text.count("serviceName")
     except ValueError:
         pass
     return out
@@ -79,79 +75,52 @@ def plain(depart: str) -> dict:
         return {"error": f"{type(exc).__name__}: {exc}"}
 
 
-def abck_state(context) -> str:
-    for cookie in context.cookies():
-        if cookie["name"] == "_abck":
-            value = cookie["value"]
-            if "~0~" in value:
-                return "cleared"
-            if "~-1~" in value:
-                return "not-cleared"
-            return "unknown"
-    return "absent"
-
-
 def in_browser(depart: str) -> dict:
-    """Warm up a browser that looks less automated, then call the endpoint."""
-    log = []
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
+        browser = playwright.chromium.launch(headless=True)
         try:
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
-                locale="en-US",
-                timezone_id="America/New_York",
-                viewport={"width": 1440, "height": 900},
+            page = browser.new_page()
+            page.goto("https://www.amtrak.com/home", wait_until="domcontentloaded", timeout=45_000)
+            page.wait_for_timeout(12_000)
+            result = page.evaluate(
+                """async ([url, payload]) => {
+                    const out = {};
+                    const t = await fetch('/libs/granite/csrf/token.json', {credentials: 'include'});
+                    const tj = await t.json().catch(() => ({}));
+                    const token = tj.token || 'undefined';
+                    out.csrf_status = t.status;
+                    const trace = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('') + Date.now();
+                    const variants = {
+                        with_csrf_and_trace: {'csrf-token': token, 'x-amtrak-trace-id': trace},
+                        csrf_only: {'csrf-token': token},
+                    };
+                    for (const [name, extra] of Object.entries(variants)) {
+                        const r = await fetch(url, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: Object.assign({'content-type': 'application/json', 'accept': 'application/json, text/plain, */*'}, extra),
+                            body: JSON.stringify(payload),
+                        });
+                        out[name] = {status: r.status, text: (await r.text())};
+                    }
+                    return out;
+                }""",
+                [URL, body(depart)],
             )
-            context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-            page = context.new_page()
-            page.goto("https://www.amtrak.com/home.html", wait_until="domcontentloaded", timeout=60_000)
-            page.wait_for_timeout(3_000)
-            for x, y in ((420, 330), (700, 480), (980, 300), (640, 620)):
-                page.mouse.move(x, y, steps=12)
-                page.wait_for_timeout(250)
-            page.mouse.wheel(0, 500)
-            page.wait_for_timeout(600)
-            page.goto("https://www.amtrak.com/tickets/departure.html", wait_until="domcontentloaded", timeout=60_000)
-            page.wait_for_timeout(4_000)
-            for attempt in range(8):
-                state = abck_state(context)
-                log.append(state)
-                if state == "cleared":
-                    break
-                page.wait_for_timeout(3_000)
-                page.mouse.move(500 + attempt * 40, 400, steps=8)
-            attempts = []
-            for _ in range(3):
-                result = page.evaluate(
-                    """async ([url, payload, trace]) => {
-                        const ctl = new AbortController();
-                        setTimeout(() => ctl.abort(), 45000);
-                        try {
-                            const r = await fetch(url, {
-                                method: 'POST', signal: ctl.signal,
-                                headers: {'content-type': 'application/json', 'accept': 'application/json, text/plain, */*', 'x-amtrak-trace-id': trace},
-                                body: JSON.stringify(payload),
-                            });
-                            return {status: r.status, text: await r.text()};
-                        } catch (e) { return {status: 0, text: String(e)}; }
-                    }""",
-                    ["/dotcom/journey-solution-option", body(depart), "%032x%d0" % (random.getrandbits(128), int(time.time() * 1000))],
-                )
-                attempts.append(summarize(result["status"], result["text"]))
-                if result["status"] == 200:
-                    break
-                page.wait_for_timeout(4_000)
-            return {"abck_log": log, "final_abck": abck_state(context), "attempts": attempts}
+            return {
+                "csrf_status": result["csrf_status"],
+                "with_csrf_and_trace": summarize(result["with_csrf_and_trace"]["status"], result["with_csrf_and_trace"]["text"]),
+                "csrf_only": summarize(result["csrf_only"]["status"], result["csrf_only"]["text"]),
+            }
         except Exception as exc:  # noqa: BLE001
-            return {"abck_log": log, "error": f"{type(exc).__name__}: {exc}"[:600]}
+            return {"error": f"{type(exc).__name__}: {exc}"[:600]}
         finally:
             browser.close()
 
 
 def main() -> None:
     depart = (date.today() + timedelta(days=30)).isoformat()
-    print(json.dumps({"depart": depart, "in_browser": in_browser(depart)}, indent=2))
+    print(json.dumps({"depart": depart, "plain_request": plain(depart), "in_browser": in_browser(depart)}, indent=2))
 
 
 if __name__ == "__main__":
