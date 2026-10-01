@@ -70,12 +70,14 @@ def probe_form_search(page, search_date: date) -> dict:
             "els => els.filter(e => e.offsetParent).map(e => ({id: e.id, name: e.name, aria: e.getAttribute('aria-label'), placeholder: e.placeholder}))",
         )
         steps = []
-        for label, code in (("From", "NYP"), ("To", "CHI")):
+        for label, code in (("From", "NYP"), ("To", "Chicago")):
             field = page.locator(f'input[aria-label="{label}"]').first
+            page.keyboard.press("Escape")
             field.focus()
+            page.wait_for_timeout(1_000)
             field.fill("")
-            page.keyboard.type(code, delay=120)
-            page.wait_for_timeout(2_500)
+            page.keyboard.type(code, delay=200)
+            page.wait_for_timeout(4_000)
             listbox = page.locator('[role="listbox"]:visible, [id*="autocomplete"]:visible').first
             steps.append(f"{label} listbox: " + (listbox.evaluate("e => e.outerHTML")[:700] if listbox.count() else "none"))
             page.keyboard.press("ArrowDown")
