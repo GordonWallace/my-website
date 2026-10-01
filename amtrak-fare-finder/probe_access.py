@@ -76,21 +76,21 @@ def probe_form_search(page, search_date: date) -> dict:
             field.fill("")
             page.keyboard.type(code, delay=120)
             page.wait_for_timeout(2_500)
-            option = page.get_by_role("option").first
-            if option.count():
-                steps.append(f"{label}: picked '{option.inner_text()[:60]}'")
-                option.click(force=True)
-            else:
-                steps.append(f"{label}: no autocomplete option")
-                field.press("Enter")
+            listbox = page.locator('[role="listbox"]:visible, [id*="autocomplete"]:visible').first
+            steps.append(f"{label} listbox: " + (listbox.evaluate("e => e.outerHTML")[:700] if listbox.count() else "none"))
+            page.keyboard.press("ArrowDown")
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(1_000)
+            steps.append(f"{label} value now: {field.input_value()!r}")
         depart = page.locator("input#am-form-field-control-4").first
         depart.focus()
         depart.fill(search_date.strftime("%m/%d/%Y"))
-        depart.press("Escape")
-        steps.append("date filled")
+        depart.press("Tab")
+        steps.append(f"date value now: {depart.input_value()!r}")
         page.get_by_role("button", name=re.compile("find trains", re.I)).first.click(force=True)
         steps.append("clicked FIND TRAINS")
         page.wait_for_timeout(25_000)
+        steps.append("visible errors: " + str(page.locator('[role="alert"]:visible, .error:visible, [class*="error"]:visible').all_inner_texts()[:5]))
         result["steps"] = steps
         html = page.content()
         result.update(
