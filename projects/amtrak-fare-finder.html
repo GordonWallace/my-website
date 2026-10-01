@@ -77,6 +77,143 @@
             color: rgba(255, 255, 255, 0.92);
         }
 
+        .hero-eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.35rem 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            margin-top: 1.5rem;
+        }
+
+        .button-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0.85rem 1.25rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .button-link.primary {
+            background: #fff;
+            border-color: #fff;
+            color: #003e7e;
+        }
+
+        .button-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        }
+
+        .button-link:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
+        }
+
+        .layout {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .intro-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #d8e1ec;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 62, 126, 0.08);
+            padding: 1.5rem;
+        }
+
+        .panel h2 {
+            color: #003e7e;
+            margin-bottom: 0.75rem;
+        }
+
+        .panel p,
+        .meta-list,
+        .steps {
+            color: #4f5f73;
+        }
+
+        .panel p + p {
+            margin-top: 0.75rem;
+        }
+
+        .panel a {
+            color: #005eb8;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .meta-list {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .meta-list strong {
+            display: block;
+            color: #003e7e;
+            margin-bottom: 0.15rem;
+        }
+
+        .steps {
+            display: grid;
+            gap: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        .steps li::marker {
+            color: #003e7e;
+            font-weight: 700;
+        }
+
+        pre {
+            margin-top: 0.5rem;
+            padding: 0.85rem 1rem;
+            background: #0f1f33;
+            color: #e8eef3;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 0.95rem;
+        }
+
+        code {
+            font-family: 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+        }
+
+        .note {
+            margin-top: 1.25rem;
+            padding: 0.85rem 1rem;
+            border-left: 4px solid #d31e39;
+            background: #f8f9fa;
+            border-radius: 0 10px 10px 0;
+        }
+
         main {
             max-width: 1100px;
             margin: 0 auto;
@@ -213,6 +350,12 @@
             letter-spacing: 0.5px;
         }
 
+        @media (max-width: 900px) {
+            .intro-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             header {
                 padding: 3rem 1.25rem 2.5rem;
@@ -253,24 +396,84 @@
     <header>
         <div class="hero">
             <a class="back-link" href="../index.html" aria-label="Back to all projects on the landing page">&larr; Back to all projects</a>
+            <span class="hero-eyebrow">Project 03</span>
             <h1>Amtrak Fare Finder</h1>
             <p>
-                A proof-of-concept project for pulling fare options for a New York to Chicago trip on a chosen day, using public resources first and scraping only as a fallback.
+                A small Ubuntu app that looks up Amtrak fares for multi-stop trips. Enter your stops in order with a travel date for each leg, and it lists the trains and the price of each fare class, leg by leg.
             </p>
+            <div class="hero-actions">
+                <a class="button-link primary" data-release-link href="https://github.com/GordonWallace/amtrak-fare-finder/releases/latest" target="_blank" rel="noreferrer">Download for Ubuntu</a>
+                <a class="button-link" href="#install">Install instructions</a>
+            </div>
         </div>
     </header>
 
     <main>
+        <div class="layout">
+            <div class="intro-grid">
+                <section class="panel">
+                    <h2>What it does</h2>
+                    <p>
+                        Fare Finder searches Amtrak the same way you would on amtrak.com, then gathers the results for every leg of your trip in one place: each train, its departure and arrival times, and the price of each fare class on that leg's date.
+                    </p>
+                    <p>
+                        It runs on your own computer rather than on a website. Amtrak blocks searches that come from cloud servers, so the app opens a local page in your browser and does the searching from your home connection.
+                    </p>
+                </section>
+
+                <aside class="panel">
+                    <h2>At a glance</h2>
+                    <ul class="meta-list">
+                        <li>
+                            <strong>Platform</strong>
+                            Ubuntu 22.04 or newer, 64-bit
+                        </li>
+                        <li>
+                            <strong>Download size</strong>
+                            A single file, plus about 150&nbsp;MB for Chromium on first run
+                        </li>
+                        <li>
+                            <strong>Source</strong>
+                            <a data-repo-link href="https://github.com/GordonWallace/amtrak-fare-finder" target="_blank" rel="noreferrer">GordonWallace/amtrak-fare-finder</a>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+
+            <section class="panel" id="install">
+                <h2>Install and run on Ubuntu</h2>
+                <ol class="steps">
+                    <li>
+                        Download the latest <code>amtrak-fare-finder</code> file from the
+                        <a data-release-link href="https://github.com/GordonWallace/amtrak-fare-finder/releases/latest" target="_blank" rel="noreferrer">releases page</a>.
+                    </li>
+                    <li>
+                        Open a terminal in the folder you saved it to and make it executable:
+                        <pre><code>chmod +x amtrak-fare-finder</code></pre>
+                    </li>
+                    <li>
+                        Start it:
+                        <pre><code>./amtrak-fare-finder</code></pre>
+                        The first run downloads a copy of Chromium (about 150&nbsp;MB), so give it a minute. Later runs start right away.
+                    </li>
+                    <li>
+                        Fare Finder opens a page in your browser. Enter your stops in order with a date for each leg, then search to see the fares for every leg.
+                    </li>
+                    <li>
+                        When you are done, close the browser tab and press <code>Ctrl+C</code> in the terminal to stop the app.
+                    </li>
+                </ol>
+                <p class="note">
+                    Searches run from your own internet connection, and results come straight from Amtrak, so prices match what amtrak.com shows at that moment. Book your tickets on amtrak.com.
+                </p>
+            </section>
+        </div>
+
         <section class="project-detail" id="amtrak-fare-finder">
             <div class="project-detail-header">
-                <h2>Amtrak Fare Finder: A Proof of Concept</h2>
+                <h2>Project notes</h2>
                 <p>
-                    The first goal is narrow on purpose: identify a practical path to show fare options for a single New York to Chicago search before expanding the project further.
-                </p>
-                <p>
-                    A small web interface is now available for trying it out: see the
-                    <a href="https://github.com/GordonWallace/my-website/tree/main/amtrak-fare-finder#web-interface">Amtrak Fare Finder README</a>
-                    for instructions to run it locally (it isn't hosted as part of this static site).
+                    How the project got here, starting from a New York to Chicago proof of concept.
                 </p>
             </div>
             <div id="posts-container"></div>
@@ -282,6 +485,17 @@
     </footer>
 
     <script>
+        // Change these when the app's repository moves; every download and source link on the page uses them.
+        const REPO_URL = 'https://github.com/GordonWallace/amtrak-fare-finder';
+        const RELEASE_URL = `${REPO_URL}/releases/latest`;
+
+        for (const link of document.querySelectorAll('[data-release-link]')) {
+            link.href = RELEASE_URL;
+        }
+        for (const link of document.querySelectorAll('[data-repo-link]')) {
+            link.href = REPO_URL;
+        }
+
         const PROJECT_ID = 'amtrak-fare-finder';
         const POSTS_SCHEMA_DESCRIPTION = 'Posts for this page must include "project", "title", "date", and "textFile" string fields.';
         const MONTH_INDEX = {
