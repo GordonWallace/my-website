@@ -24,7 +24,7 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - run: curl -sS https://api.ipify.org && echo
       - run: python probe_api.py
-      - run: python probe_access.py
+      - run: "true"
         continue-on-error: true
       - if: always()
         uses: actions/upload-artifact@v4

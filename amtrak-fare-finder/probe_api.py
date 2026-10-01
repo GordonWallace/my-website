@@ -84,16 +84,34 @@ def in_browser(depart: str) -> dict:
             page.wait_for_timeout(12_000)
             result = page.evaluate(
                 """async ([url, payload]) => {
-                    const r = await fetch(url, {
-                        method: 'POST',
-                        headers: {'content-type': 'application/json', 'accept': 'application/json, text/plain, */*'},
-                        body: JSON.stringify(payload),
-                    });
-                    return {status: r.status, text: await r.text()};
+                    const out = {};
+                    const t = await fetch('/libs/granite/csrf/token.json', {credentials: 'include'});
+                    const tj = await t.json().catch(() => ({}));
+                    const token = tj.token || 'undefined';
+                    out.csrf_status = t.status;
+                    const trace = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('') + Date.now();
+                    const variants = {
+                        with_csrf_and_trace: {'csrf-token': token, 'x-amtrak-trace-id': trace},
+                        csrf_only: {'csrf-token': token},
+                    };
+                    for (const [name, extra] of Object.entries(variants)) {
+                        const r = await fetch(url, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: Object.assign({'content-type': 'application/json', 'accept': 'application/json, text/plain, */*'}, extra),
+                            body: JSON.stringify(payload),
+                        });
+                        out[name] = {status: r.status, text: (await r.text())};
+                    }
+                    return out;
                 }""",
                 [URL, body(depart)],
             )
-            return summarize(result["status"], result["text"])
+            return {
+                "csrf_status": result["csrf_status"],
+                "with_csrf_and_trace": summarize(result["with_csrf_and_trace"]["status"], result["with_csrf_and_trace"]["text"]),
+                "csrf_only": summarize(result["csrf_only"]["status"], result["csrf_only"]["text"]),
+            }
         except Exception as exc:  # noqa: BLE001
             return {"error": f"{type(exc).__name__}: {exc}"[:600]}
         finally:
